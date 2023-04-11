@@ -1,0 +1,163 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Ajoutez ou modifiez cette partie dans App.css */
+.logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px; /* Ajustez la taille du logo */
+  height: auto;
+}
+
+
+
+
+/* AcronymPage.css */
+.Acronyms {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.Acronyms h1 {
+  margin-bottom: 20px;
+}
+
+.Acronyms form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.Acronyms form .form-group {
+  margin-bottom: 15px;
+}
+
+.Acronyms form button {
+  width: 100%;
+}
+
+.Acronyms ul {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+  max-width: 400px;
+}
+
+.Acronyms ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* Style pour les champs de texte */
+input[type='text'] {
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+/* Style pour le logo */
+.logo {
+  width: 100px;
+  height: auto;
+  margin-right: 20px;
+}
+
+/* Style pour l'en-tête */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Style pour le champ de recherche */
+.Search {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.Search input {
+  width: 100%;
+  max-width: 400px;
+  margin-right: 10px;
+}
+.App input[type='text'] {
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+/* Style pour le logo */
+header .logo {
+  width: 100px;
+  height: auto;
+  margin-right: 20px;
+}
+
+/* Style pour l'en-tête */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Style pour le champ de recherche */
+.Search {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.Search input {
+  width: 100%;
+  max-width: 400px;
+  margin-right: 10px;
+}
