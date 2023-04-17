@@ -9,11 +9,9 @@ app = FastAPI()
 async def startup():
     await database.connect()
 
-
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -24,5 +22,5 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
-app.include_router(newcomers.router, prefix="/newcomer", tags=["newcomers"])
-app.include_router(veterans.router, prefix="/veteran", tags=["veterans"])
+app.include_router(newcomers.router, prefix="/newcomers", tags=["newcomers"])
+app.include_router(veterans.router, prefix="/veterans", tags=["veterans"])
