@@ -1,20 +1,29 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
 const TrainingForm = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (title && description && date && time) {
-      // Simulez une requête API pour ajouter une nouvelle formation
-      console.log('Ajout de la formation :', { title, description, date, time });
+      // Récupérer les informations de l'utilisateur connecté depuis le localStorage
+      const user = JSON.parse(localStorage.getItem('user'));
+      const creator_id = user.id;
+
+      const training = { title, description, date, time, creator_id };
+
+      //  await axios.post('http://localhost:8000/veterans/add', training);
+      await axios.post('http://localhost:8000/veterans/add', training);
       setTitle('');
       setDescription('');
       setDate('');
       setTime('');
+
+
+
     }
   };
 

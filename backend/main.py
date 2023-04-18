@@ -2,8 +2,12 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from api import newcomers, veterans, auth
 from database import database, Base
+import logging
 
 app = FastAPI()
+
+# Ajout du niveau de log et de la configuration
+logging.basicConfig(level=logging.INFO)
 
 @app.on_event("startup")
 async def startup():
@@ -15,7 +19,7 @@ async def shutdown():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

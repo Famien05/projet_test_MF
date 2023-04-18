@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const MyOfferedTrainings = () => {
   const [trainings, setTrainings] = useState([]);
 
   useEffect(() => {
-    // Simulez une requête API pour récupérer les formations proposées par l'utilisateur connecté
     const fetchTrainings = async () => {
-      const offeredTrainings = [
-        { id: 1, title: 'Formation proposée 1', description: 'Description 1', date: '2023-04-18', time: '14:00' },
-        { id: 2, title: 'Formation proposée 2', description: 'Description 2', date: '2023-04-20', time: '10:00' },
-      ];
-      setTrainings(offeredTrainings);
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        const creator_id = user.id; // Récupérez l'ID de l'utilisateur connecté
+        const response = await axios.get(`http://localhost:8000/veterans/trainings?creator_id=${creator_id}`);
+        setTrainings(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
     fetchTrainings();
   }, []);

@@ -1,27 +1,40 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AvailableTrainings = () => {
   const [trainings, setTrainings] = useState([]);
 
   useEffect(() => {
-    // Simulez une requête API pour récupérer les formations disponibles
     const fetchTrainings = async () => {
-      const availableTrainings = [
-        { id: 1, title: 'Formation 1' },
-        { id: 2, title: 'Formation 2' },
-        { id: 3, title: 'Formation 3' },
-      ];
-      setTrainings(availableTrainings);
+      const response = await axios.get('http://localhost:8000/newcomers/available');
+
+      setTrainings(response.data);
     };
     fetchTrainings();
   }, []);
+
+  const enrollTraining = async (trainingId) => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      const USER_ID = user.id;
+      await axios.post(`http://localhost:8000/newcomers/enroll/${trainingId}?user_id=${USER_ID}`);
+      alert('Inscription réussie !');
+    } catch (error) {
+      alert('Erreur lors de l\'inscription à la formation');
+      console.error(error);
+    }
+};
+
 
   return (
     <div>
       <h2>Formations disponibles</h2>
       <ul>
         {trainings.map((training) => (
-          <li key={training.id}>{training.title}</li>
+          <li key={training.id}>
+            {training.title}{' '}
+            <button onClick={() => enrollTraining(training.id)}>S'inscrire</button>
+          </li>
         ))}
       </ul>
     </div>

@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import TrainingCard from './TrainingCard';
 
 const MyTrainings = () => {
   const [trainings, setTrainings] = useState([]);
 
   useEffect(() => {
-    // Simulez une requête API pour récupérer les formations de l'utilisateur connecté
     const fetchTrainings = async () => {
-      const myTrainings = [
-        { id: 1, title: 'Ma Formation 1' },
-        { id: 2, title: 'Ma Formation 2' },
-      ];
-      setTrainings(myTrainings);
+      const user = JSON.parse(localStorage.getItem("user"));
+      const USER_ID = user.id;
+      try {
+        const response = await axios.get(`http://localhost:8000/newcomers/trainings/${USER_ID}`);
+        console.log("Response received:", response); // Ajoutez ce log
+        setTrainings(response.data);
+      } catch (error) {
+        console.error("Error while fetching trainings:", error); // Ajoutez ce log
+      }
     };
     fetchTrainings();
   }, []);
@@ -18,11 +23,13 @@ const MyTrainings = () => {
   return (
     <div>
       <h2>Mes formations</h2>
-      <ul>
-        {trainings.map((training) => (
-          <li key={training.id}>{training.title}</li>
-        ))}
-      </ul>
+        {trainings ? (
+        trainings.map((training) => (
+          <TrainingCard key={training.id} training={training} />
+        ))
+      ) : (
+        <p>Loading trainings...</p>
+      )}
     </div>
   );
 };

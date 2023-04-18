@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from datetime import date, time
 
-from sqlalchemy import Column, Integer, String, Date, Time
+from sqlalchemy import Column, Integer, String, Date, Time, ForeignKey
 from database import Base
 import sqlalchemy
 
@@ -14,6 +14,15 @@ trainings_table = sqlalchemy.Table(
     sqlalchemy.Column("date", sqlalchemy.Date),
     sqlalchemy.Column("time", sqlalchemy.Time),
     sqlalchemy.Column("creator_id", sqlalchemy.Integer),
+)
+
+# Ajoutez cette partie pour créer la table user_trainings
+user_trainings_table = sqlalchemy.Table(
+    "user_trainings",
+    sqlalchemy.MetaData(),
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, autoincrement=True),
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, ForeignKey("users.id")),
+    sqlalchemy.Column("training_id", sqlalchemy.Integer, ForeignKey("trainings.id")),
 )
 
 class TrainingCreate(BaseModel):
