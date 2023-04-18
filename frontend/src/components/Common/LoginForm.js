@@ -1,25 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import UserContext from '../../UserContext';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const { setUser, setUserType } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/login', { email, password });
+      const response = await axios.post('http://localhost:8000/login', {
+        email,
+        password,
+      });
       if (response.data) {
-        // Store user data in a global state or localStorage
+        // Store user data in the global state and localStorage
+        setUser(response.data);
+        setUserType(response.data.is_veteran ? 'veteran' : 'newcomer');
         localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.setItem('userType', response.data.is_veteran ? 'veteran' : 'newcomer');
+        
 
         // Redirect user to their dashboard (Newcomer or Veteran)
         if (response.data.is_veteran) {
-          navigate('/veteran/trainings'); 
+          navigate('/veteran/trainings');
         } else {
           navigate('/newcomer/trainings');
         }
@@ -32,7 +41,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <label htmlFor="email">Email:</label>

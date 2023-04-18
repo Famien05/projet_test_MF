@@ -120,3 +120,41 @@ header a:hover {
 .TrainingForm form button {
   width: 100%;
 }
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+/* Styles pour centrer et aligner les champs de formulaire */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.form-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+textarea,
+select,
+button {
+  font-size: 14px;
+  padding: 10px;
+}
+
+button {
+  width: 100%;
+}

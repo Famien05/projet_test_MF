@@ -28,7 +28,7 @@ const TrainingForm = () => {
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h2>Ajouter une formation</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="title">Titre de la formation :</label>
