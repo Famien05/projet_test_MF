@@ -20,12 +20,23 @@ const MyTrainings = () => {
     fetchTrainings();
   }, []);
 
+  const refreshTrainings = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const USER_ID = user.id;
+    try {
+      const response = await axios.get(`http://localhost:8000/newcomers/trainings/${USER_ID}`);
+      console.log("Response received:", response);
+      setTrainings(response.data);
+    } catch (error) {
+      console.error("Error while fetching trainings:", error);
+    }
+  };
   return (
     <div>
       <h2>Mes formations</h2>
         {trainings ? (
         trainings.map((training) => (
-          <TrainingCard key={training.id} training={training} />
+          <TrainingCard key={training.id} training={training} onWithdraw={refreshTrainings} />
         ))
       ) : (
         <p>Loading trainings...</p>

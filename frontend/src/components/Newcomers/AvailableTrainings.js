@@ -32,7 +32,10 @@ const AvailableTrainings = () => {
       <ul>
         {trainings.map((training) => (
           <li key={training.id}>
-            {training.title}{' '}
+              <p>{training.title}</p>
+              <p>{training.description}</p>
+              <p>Date : {training.date}</p>
+              <p>Heure : {training.time}</p>
             <button onClick={() => enrollTraining(training.id)}>S'inscrire</button>
           </li>
         ))}
