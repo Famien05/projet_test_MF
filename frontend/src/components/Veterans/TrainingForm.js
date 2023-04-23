@@ -5,23 +5,23 @@ const TrainingForm = () => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [meeting_link, setMeeting_link] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (title && description && date && time) {
+    if (title && description && date && time && meeting_link) {
       // Récupérer les informations de l'utilisateur connecté depuis le localStorage
       const user = JSON.parse(localStorage.getItem('user'));
       const creator_id = user.id;
 
-      const training = { title, description, date, time, creator_id };
-
+      const training = { title, description, date, time, creator_id, meeting_link };
       //  await axios.post('http://localhost:8000/veterans/add', training);
       await axios.post('http://localhost:8000/veterans/add', training);
       setTitle('');
       setDescription('');
       setDate('');
       setTime('');
-
+      setMeeting_link('');
 
 
     }
@@ -62,6 +62,15 @@ const TrainingForm = () => {
           onChange={(e) => setTime(e.target.value)}
           required
         />
+        <label htmlFor="meeting_link">Lien de la réunion :</label>
+        <input
+          type="text"
+          id="meeting_link"
+          value={meeting_link}
+          onChange={(e) => setMeeting_link(e.target.value)}
+          required
+        />
+
         <button type="submit">Ajouter</button>
       </form>
     </div>

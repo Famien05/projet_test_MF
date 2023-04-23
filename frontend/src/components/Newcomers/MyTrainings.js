@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TrainingCard from './TrainingCard';
+import { Button } from 'react-bootstrap';
 
 const MyTrainings = () => {
   const [trainings, setTrainings] = useState([]);
@@ -11,10 +12,10 @@ const MyTrainings = () => {
       const USER_ID = user.id;
       try {
         const response = await axios.get(`http://localhost:8000/newcomers/trainings/${USER_ID}`);
-        console.log("Response received:", response); // Ajoutez ce log
+        console.log("Response received:", response);
         setTrainings(response.data);
       } catch (error) {
-        console.error("Error while fetching trainings:", error); // Ajoutez ce log
+        console.error("Error while fetching trainings:", error);
       }
     };
     fetchTrainings();
@@ -31,12 +32,39 @@ const MyTrainings = () => {
       console.error("Error while fetching trainings:", error);
     }
   };
+
+  const shouldDisplayJoinButton = (meetingDate, meetingTimeStr, durationInHours = 1) => {
+    const now = new Date();
+  
+    const combinedDateTime = `${meetingDate}T${meetingTimeStr}`;
+    const meetingDateTime = new Date(combinedDateTime);
+    const meetingEndTime = new Date(meetingDateTime);
+    meetingEndTime.setHours(meetingEndTime.getHours() + durationInHours);
+  
+    //console.log("Now:", now);
+    //console.log("Meeting Date and Time:", meetingDateTime);
+    //console.log("Meeting End Time:", meetingEndTime);
+  
+    return now >= meetingDateTime && now <= meetingEndTime;
+  };
+
+    
+  
+  
+
   return (
     <div>
       <h2>Mes formations</h2>
-        {trainings ? (
+      {trainings ? (
         trainings.map((training) => (
-          <TrainingCard key={training.id} training={training} onWithdraw={refreshTrainings} />
+          <div key={training.id}>
+            <TrainingCard training={training} onWithdraw={refreshTrainings} />
+            {shouldDisplayJoinButton(training.date, training.time) && (
+              <Button href={training.meeting_link} target="_blank">
+                Rejoindre la réunion
+              </Button>
+            )}
+          </div>
         ))
       ) : (
         <p>Loading trainings...</p>

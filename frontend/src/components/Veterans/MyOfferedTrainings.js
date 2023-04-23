@@ -32,7 +32,8 @@ const MyOfferedTrainings = () => {
       const training = trainings.find((t) => t.id === trainingId);
       setEditingTraining(training);
     }
-  };  
+  };
+
   const deleteTraining = async (trainingId) => {
     try {
       await axios.delete(`http://localhost:8000/veterans/delete/${trainingId}`);
@@ -41,7 +42,7 @@ const MyOfferedTrainings = () => {
       console.error(error);
     }
   };
-  
+
   const handleInputChange = (event, trainingId) => {
     const { name, value } = event.target;
     setEditingTraining((prev) => ({ ...prev, [name]: value }));
@@ -101,8 +102,9 @@ const MyOfferedTrainings = () => {
           </li>
         ))}
       </ul>
-      </div>
+    </div>
   );
 };
 
 export default MyOfferedTrainings;
+
