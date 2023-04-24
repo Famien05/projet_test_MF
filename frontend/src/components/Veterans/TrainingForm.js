@@ -5,6 +5,7 @@ const TrainingForm = () => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [endTime, setEndTime] = useState("");
   const [meeting_link, setMeeting_link] = useState('');
 
   const handleSubmit = async (e) => {
@@ -21,6 +22,7 @@ const TrainingForm = () => {
       setDescription('');
       setDate('');
       setTime('');
+      setEndTime('');
       setMeeting_link('');
 
 
@@ -60,6 +62,14 @@ const TrainingForm = () => {
           id="time"
           value={time}
           onChange={(e) => setTime(e.target.value)}
+          required
+        />
+        <label htmlFor="end_time">Heure de fin :</label> {/* Ajoutez ce champ */}
+        <input
+          type="time"
+          id="end_time"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
           required
         />
         <label htmlFor="meeting_link">Lien de la réunion :</label>
