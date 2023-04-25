@@ -26,9 +26,11 @@ async def add_training(training: TrainingCreate):
         date=training.date,
         time=training_time,  # Utilisez l'objet time pour l'insertion
         creator_id=training.creator_id,
+        link=training.link
     )
     training_id = await database.execute(query)
     return training_id
+
 
 @router.delete("/delete/{training_id}")
 async def delete_training(training_id: int):

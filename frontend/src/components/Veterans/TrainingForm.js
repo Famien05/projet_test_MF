@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+
 const TrainingForm = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [link, setLink] = useState(''); // ajouter un state pour le lien
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -13,7 +16,7 @@ const TrainingForm = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       const creator_id = user.id;
 
-      const training = { title, description, date, time, creator_id };
+      const training = { title, description, date, time, creator_id, link };
 
       //  await axios.post('http://localhost:8000/veterans/add', training);
       await axios.post('http://localhost:8000/veterans/add', training);
@@ -21,6 +24,7 @@ const TrainingForm = () => {
       setDescription('');
       setDate('');
       setTime('');
+      setLink('');
 
 
 
@@ -61,6 +65,13 @@ const TrainingForm = () => {
           value={time}
           onChange={(e) => setTime(e.target.value)}
           required
+        />
+        <label htmlFor="link">Lien Reunion :</label>
+        <input
+          type="url" // changer le type d'entrée pour url pour valider automatiquement l'URL saisie
+          id="link"
+          value={link}
+          onChange={(e) => setLink(e.target.value)}
         />
         <button type="submit">Ajouter</button>
       </form>

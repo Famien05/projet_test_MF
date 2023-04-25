@@ -3,7 +3,7 @@ import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-DATABASE_URL = "postgresql://postgres:0000@localhost:5433/projetFormation"
+DATABASE_URL = "postgresql://postgres:Mariab102.@localhost:5432/Projet"
 database = Database(DATABASE_URL)
 
 metadata = sqlalchemy.MetaData()

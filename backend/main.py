@@ -28,3 +28,5 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(newcomers.router, prefix="/newcomers", tags=["newcomers"])
 app.include_router(veterans.router, prefix="/veterans", tags=["veterans"])
+
+
