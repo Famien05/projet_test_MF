@@ -68,3 +68,36 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+## Pour la base de données
+# Training
+CREATE SEQUENCE trainings_id_seq;
+ALTER TABLE trainings ALTER COLUMN id SET DEFAULT nextval('trainings_id_seq');
+WITH max_id AS (
+    SELECT MAX(id) AS max_id_val FROM trainings
+)
+UPDATE trainings
+SET id = nextval('trainings_id_seq')
+WHERE id = (SELECT max_id_val FROM max_id);
+
+SELECT setval('trainings_id_seq', (SELECT MAX(id) FROM trainings) + 1);
+
+
+# User__trainings
+CREATE SEQUENCE user_trainings_id_seq;
+ALTER TABLE user_trainings
+ALTER COLUMN id
+SET DEFAULT nextval('user_trainings_id_seq');
+SELECT setval('user_trainings_id_seq', (SELECT MAX(id) FROM user_trainings));
+
+# User
+CREATE SEQUENCE users_id_seq;
+ALTER TABLE users ALTER COLUMN id SET DEFAULT nextval('users_id_seq');
+WITH max_id AS (
+    SELECT MAX(id) AS max_id_val FROM users
+)
+UPDATE users
+SET id = nextval('users_id_seq')
+WHERE id = (SELECT max_id_val FROM max_id);
+
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users) + 1);

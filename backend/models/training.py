@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from datetime import date, time
+
 from sqlalchemy import Column, Integer, String, Date, Time, ForeignKey
 from database import Base
-import sqlalchemy
 
 trainings_table = sqlalchemy.Table(
     "trainings",
@@ -17,7 +17,6 @@ trainings_table = sqlalchemy.Table(
 
 )
 
-# Ajoutez cette partie pour créer la table user_trainings
 user_trainings_table = sqlalchemy.Table(
     "user_trainings",
     sqlalchemy.MetaData(),
@@ -37,6 +36,15 @@ class TrainingCreate(BaseModel):
     
 
 
+
+class TrainingUpdate(BaseModel):
+    title: str
+    description: str
+    date: date
+    time: time
+
+    class Config:
+        orm_mode = True
 
 class Training(BaseModel):
     id: int
