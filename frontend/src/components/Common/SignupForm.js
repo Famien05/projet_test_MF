@@ -39,68 +39,89 @@ const SignupForm = () => {
   };
   return (
     <div className="form-container">
-      <h1>Sign Up</h1>
-      <form      onSubmit={handleSubmit}>
-        <label htmlFor="firstName">First Name:</label>
+    <h1>Sign Up</h1>
+    <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+        <label htmlFor="firstName" className="form-label">First Name:</label>
         <input
           type="text"
           id="firstName"
+          className="form-control"
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           required
         />
-        <label htmlFor="lastName">Last Name:</label>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="lastName" className="form-label">Last Name:</label>
         <input
           type="text"
           id="lastName"
+          className="form-control"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           required
         />
-        <label htmlFor="email">Email:</label>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="email" className="form-label">Email:</label>
         <input
           type="email"
           id="email"
+          className="form-control"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <label htmlFor="password">Password:</label>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="password" className="form-label">Password:</label>
         <input
           type="password"
           id="password"
+          className="form-control"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <label htmlFor="service">Service:</label>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="service" className="form-label">Service:</label>
         <input
           type="text"
           id="service"
+          className="form-control"
           value={service}
           onChange={(e) => setService(e.target.value)}
           required
         />
-        <label htmlFor="position">Position:</label>
+      </div>
+      <div className="mb-3">
+        <label htmlFor="position" className="form-label">Position:</label>
         <input
           type="text"
           id="position"
+          className="form-control"
           value={position}
           onChange={(e) => setPosition(e.target.value)}
           required
         />
-        <label htmlFor="isVeteran">Ancien:</label>
+      </div>
+      <div className="mb-3 form-check">
         <input
           type="checkbox"
           id="isVeteran"
+          className="form-check-input"
           checked={isVeteran}
           onChange={(e) => setIsVeteran(e.target.checked)}
         />
-        {error && <p>{error}</p>}
-        <button type="submit">Sign Up</button>
-      </form>
-    </div>
-  );
+        <label htmlFor="isVeteran" className="form-check-label">Ancien:</label>
+      </div>
+      {error && <p className="text-danger">{error}</p>}
+      <button type="submit" className="btn btn-primary">Sign Up</button>
+    </form>
+  </div>
+);
 };
 
 export default SignupForm;

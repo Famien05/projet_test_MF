@@ -36,7 +36,7 @@ const TrainingCard = ({ training, onWithdraw }) => {
       <p>Date : {training.date}</p>
       <p>Heure : {training.time}</p>
       <p>Présenté par : {creatorName}</p>
-      <button onClick={handleWithdraw}>Se désinscrire</button>
+      <button className="withdraw-btn" onClick={handleWithdraw}>Se désinscrire</button>
     </div>
   );
 };

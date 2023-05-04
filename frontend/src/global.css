@@ -1,51 +1,9 @@
-/* src/App.css */
-.App {
-  text-align: center;
+/* Styles globaux */
+body {
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Ajoutez ou modifiez cette partie dans App.css */
-.logo {
-  width: 100px;
-  height: auto;
-  margin-right: 20px;
-}
-
-/* Style pour l'en-tête */
 header {
   display: flex;
   align-items: center;
@@ -55,7 +13,6 @@ header {
   padding: 10px;
 }
 
-/* Style pour les liens */
 header a {
   color: white;
   text-decoration: none;
@@ -66,64 +23,6 @@ header a:hover {
   color: #61dafb;
 }
 
-/* src/AvailableTrainings.css et src/MyTrainings.css */
-.Trainings {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-
-.Trainings h1 {
-  margin-bottom: 20px;
-}
-
-.Trainings ul {
-  list-style-type: none;
-  padding: 0;
-  width: 100%;
-  max-width: 400px;
-}
-
-.Trainings ul li {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: 5px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-/* src/MyOfferedTrainings.css et src/TrainingForm.css */
-.TrainingForm {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-
-.TrainingForm h1 {
-  margin-bottom: 20px;
-}
-
-.TrainingForm form {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 400px;
-  margin-bottom: 20px;
-}
-
-.TrainingForm form .form-group {
-  margin-bottom: 15px;
-}
-
-.TrainingForm form button {
-  width: 100%;
-}
-body {
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-}
 /* Styles pour centrer et aligner les champs de formulaire */
 .form-container {
   display: flex;
@@ -153,8 +52,86 @@ select,
 button {
   font-size: 14px;
   padding: 10px;
+  box-sizing: border-box;
 }
 
 button {
   width: 100%;
+}
+
+/* Styles pour les formations */
+.training-card {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 20px;
+  background-color: #f0f4f8; /* Couleur d'arrière-plan pour les grilles de formation */
+}
+
+.training-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+}
+
+/* Styles pour les boutons */
+.edit-btn,
+.delete-btn,
+.join-btn,
+.save-btn,
+.cancel-btn {
+  font-size: 14px;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.edit-btn {
+  background-color: #61dafb;
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.join-btn {
+  background-color: #4caf50;
+}
+
+.save-btn {
+  background-color: #4caf50;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+}
+
+.enroll-btn {
+  background-color: #3f51b5;
+  color: white;
+}
+
+.withdraw-btn {
+  background-color: #ff9800;
+  color: white;
+}
+
+.edit-btn:hover,
+.delete-btn:hover,
+.join-btn:hover,
+.save-btn:hover,
+.cancel-btn:hover {
+  opacity: 0.9;
+}
+
+/* Styles pour résoudre le problème du formulaire qui se mélange */
+.button-container {
+  display: flex;
+  gap: 5px;
+  flex-direction: column;
+}
+
+.editing {
+  flex-direction: row;
 }

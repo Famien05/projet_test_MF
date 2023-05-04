@@ -42,55 +42,72 @@ const TrainingForm = () => {
     <div className="form-container">
       <h2>Ajouter une formation</h2>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="title">Titre de la formation :</label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <label htmlFor="description">Description :</label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <label htmlFor="date">Date :</label>
-        <input
-          type="date"
-          id="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-        />
-        <label htmlFor="time">Heure :</label>
-        <input
-          type="time"
-          id="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          required
-        />
-        <label htmlFor="end_time">Heure de fin :</label>
-        <input
-          type="time"
-          id="end_time"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-          required
-        />
-        <label htmlFor="meeting_link">Lien de la réunion :</label>
-        <input
-          type="text"
-          id="meeting_link"
-          value={meeting_link}
-          onChange={(e) => setMeeting_link(e.target.value)}
-          required
-        />
-
-        <button type="submit">Ajouter</button>
+        <div className="mb-3">
+          <label htmlFor="title" className="form-label">Titre de la formation :</label>
+          <input
+            type="text"
+            id="title"
+            className="form-control"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="description" className="form-label">Description :</label>
+          <textarea
+            id="description"
+            className="form-control"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="date" className="form-label">Date :</label>
+          <input
+            type="date"
+            id="date"
+            className="form-control"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="time" className="form-label">Heure :</label>
+          <input
+            type="time"
+            id="time"
+            className="form-control"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="end_time" className="form-label">Heure de fin :</label>
+          <input
+            type="time"
+            id="end_time"
+            className="form-control"
+            value={endTime}
+            onChange={(e) => setEndTime(e.target.value)}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="meeting_link" className="form-label">Lien de la réunion :</label>
+          <input
+            type="text"
+            id="meeting_link"
+            className="form-control"
+            value={meeting_link}
+            onChange={(e) => setMeeting_link(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Ajouter</button>
       </form>
     </div>
   );

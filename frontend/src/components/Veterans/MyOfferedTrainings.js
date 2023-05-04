@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
+import "../../global.css";
 
 const MyOfferedTrainings = ({ onTrainingUpdate }) => {
   const [trainings, setTrainings] = useState([]);
@@ -125,49 +126,92 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
   return (
     <div>
       <h2>Formations proposées</h2>
-      <ul>
+      <div className="training-grid">
         {trainings.map((training) => (
-          <li key={training.id}>
+          <div key={training.id} className="training-card">
             {editingTraining && editingTraining.id === training.id ? (
-              <form>
-                <label htmlFor={`title-${training.id}`}>Titre:</label>
-                <input
-                  id={`title-${training.id}`}
-                  name="title"
-                  value={editingTraining.title}
-                  onChange={(e) => handleInputChange(e, training.id)}
-                />
-                <label htmlFor={`description-${training.id}`}>Description:</label>
-                <textarea
-                  id={`description-${training.id}`}
-                  name="description"
-                  value={editingTraining.description}
-                  onChange={(e) => handleInputChange(e, training.id)}
-                />
-                <label htmlFor={`date-${training.id}`}>Date:</label>
-                <input
-                  id={`date-${training.id}`}
-                  type="date"
-                  name="date"
-                  value={editingTraining.date}
-                  onChange={(e) => handleInputChange(e, training.id)}
-                />
-                <label htmlFor={`time-${training.id}`}>Heure:</label>
-                <input
-                  id={`time-${training.id}`}
-                  type="time"
-                  name="time"
-                  value={editingTraining.time}
-                  onChange={(e) => handleInputChange(e, training.id)}
-                />
-                <label htmlFor={`end_time-${training.id}`}>Heure de fin:</label>
-                <input
-                  id={`end_time-${training.id}`}
-                  type="time"
-                  name="end_time"
-                  value={editingTraining.end_time || ""}
-                  onChange={(e) => handleInputChange(e, training.id)}
-                />
+              <form onSubmit={(e) => handleInputChange(e, training.id)}>
+                <label>
+                  Titre:
+                  <input
+                    type="text"
+                    value={editingTraining.title}
+                    onChange={(e) =>
+                      setEditingTraining({
+                        ...editingTraining,
+                        title: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  Description:
+                  <input
+                    type="text"
+                    value={editingTraining.description}
+                    onChange={(e) =>
+                      setEditingTraining({
+                        ...editingTraining,
+                        description: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  Date:
+                  <input
+                    type="date"
+                    value={editingTraining.date}
+                    onChange={(e) =>
+                      setEditingTraining({
+                        ...editingTraining,
+                        date: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  Heure:
+                  <input
+                    type="time"
+                    value={editingTraining.time}
+                    onChange={(e) =>
+                      setEditingTraining({
+                        ...editingTraining,
+                        time: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  Heure de fin:
+                  <input
+                    type="time"
+                    value={editingTraining.end_time}
+                    onChange={(e) =>
+                      setEditingTraining({
+                        ...editingTraining,
+                        end_time: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <label>
+                  Lien de la réunion:
+                  <input
+                    type="url"
+                    value={editingTraining.meeting_link}
+                    onChange={(e) =>
+                      setEditingTraining({
+                        ...editingTraining,
+                        meeting_link: e.target.value,
+                      })
+                    }
+                  />
+                </label>
+                <button type="button" className="cancel-btn" onClick={() => setEditingTraining(null)}>
+                  Annuler
+                </button>
               </form>
             ) : (
               <>
@@ -177,21 +221,25 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
                 <p>Heure: {training.time}</p>
                 <p>Heure de fin: {training.end_time}</p>
                 {shouldDisplayJoinButton(training.date, training.time, training.end_time) && (
-                  <Button href={training.meeting_link} target="_blank">
+                  <Button className="join-btn" href={training.meeting_link} target="_blank">
                     Rejoindre la réunion
                   </Button>
                 )}
               </>
             )}
-            <button onClick={() => updateTraining(training.id)}>
+            <div className={`button-container ${editingTraining && editingTraining.id === training.id ? "editing" : ""}`}>
+
+            <button className="edit-btn" onClick={() => updateTraining(training.id)}>
               {editingTraining && editingTraining.id === training.id ? "Sauvegarder" : "Modifier"}
             </button>
-            <button onClick={() => deleteTraining(training.id)}>Supprimer</button>
-          </li>
+            <button className="delete-btn" onClick={() => deleteTraining(training.id)}>Supprimer</button>
+            </div>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
+  
 };
 
 export default MyOfferedTrainings;

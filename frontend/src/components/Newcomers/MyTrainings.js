@@ -96,23 +96,25 @@ const MyTrainings = () => {
 
   return (
     <div>
-      <h2>Mes formations</h2>
-      {trainings ? (
-        trainings.map((training) => (
-          <div key={training.id}>
+    <h2>Mes formations</h2>
+    {trainings ? (
+      <div className="training-grid">
+        {trainings.map((training) => (
+          <div key={training.id} className="training-card">
             <TrainingCard training={training} onWithdraw={fetchTrainings} />
             {shouldDisplayJoinButton(training.date, training.time, training.end_time) && (
-              <Button href={training.meeting_link} target="_blank">
+              <Button className="join-btn" href={training.meeting_link} target="_blank">
                 Rejoindre la réunion
               </Button>
             )}
           </div>
-        ))
-      ) : (
-        <p>Loading trainings...</p>
-      )}
-    </div>
-  );
+        ))}
+      </div>
+    ) : (
+      <p>Aucune formation inscrite.</p>
+    )}
+  </div>
+);
 };
 
 export default MyTrainings;
