@@ -6,6 +6,7 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
   const [trainings, setTrainings] = useState([]);
   const [editingTraining, setEditingTraining] = useState(null);
   const [nextTrainingStartTime, setNextTrainingStartTime] = useState(null);
+  const [nextTrainingEndTime, setNextTrainingEndTime] = useState(null);
   const fetchTrainings = useCallback(async () => {
     const user = JSON.parse(localStorage.getItem("user"));
     const creator_id = user.id;
@@ -25,33 +26,50 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
 
   useEffect(() => {
     if (trainings.length > 0) {
-      const newNextTrainingStartTime = trainings.reduce(
-        (minStartTime, training) => {
-          const combinedStartDateTime = new Date(
-            `${training.date}T${training.time}`
-          );
-          return combinedStartDateTime > new Date() &&
-            combinedStartDateTime < minStartTime
-            ? combinedStartDateTime
-            : minStartTime;
+      const nextTraining = trainings.reduce(
+        (next, training) => {
+          const combinedStartDateTime = new Date(`${training.date}T${training.time}`);
+          const combinedEndDateTime = new Date(`${training.date}T${training.end_time}`);
+          const now = new Date();
+          
+          if (combinedStartDateTime > now && (!next.start || combinedStartDateTime < next.start)) {
+            return { ...training, start: combinedStartDateTime, end: combinedEndDateTime };
+          } else {
+            return next;
+          }
         },
-        new Date(8640000000000000)
-      ); // Maximum possible date
-      setNextTrainingStartTime(newNextTrainingStartTime);
+        { start: null, end: null }
+      );
+      
+      setNextTrainingStartTime(nextTraining.start);
+      setNextTrainingEndTime(nextTraining.end);
     }
   }, [trainings]);
 
   useEffect(() => {
-    let timer;
+    let startTimerId;
+    let endTimerId;
+  
     if (nextTrainingStartTime) {
       const timeUntilNextTrainingStart =
-        nextTrainingStartTime - new Date().getTime();
-      timer = startTimer(timeUntilNextTrainingStart, fetchTrainings);
+        nextTrainingStartTime.getTime() - new Date().getTime();
+      startTimerId = startTimer(timeUntilNextTrainingStart, fetchTrainings);
     }
+  
+    if (nextTrainingEndTime) {
+      const timeUntilNextTrainingEnd =
+        nextTrainingEndTime.getTime() - new Date().getTime();
+      endTimerId = startTimer(timeUntilNextTrainingEnd, () => {
+        fetchTrainings();
+        setNextTrainingEndTime(null);
+      });
+    }
+  
     return () => {
-      clearTimer(timer);
+      clearTimer(startTimerId);
+      clearTimer(endTimerId);
     };
-  }, [nextTrainingStartTime, fetchTrainings]);
+  }, [nextTrainingStartTime, nextTrainingEndTime, fetchTrainings]);
   
 
   const updateTraining = async (trainingId) => {
@@ -177,4 +195,3 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
 };
 
 export default MyOfferedTrainings;
-

@@ -3,7 +3,8 @@ from models.training import TrainingCreate, Training, TrainingUpdate
 from database import database
 import sqlalchemy
 from models.training import trainings_table, user_trainings_table
-from datetime import time
+from datetime import time, date, datetime
+from datetime import timedelta
 
 router = APIRouter()
 
@@ -20,12 +21,17 @@ async def add_training(training: TrainingCreate):
 
     training_time = time(hours, minutes)
 
+    # Si end_time n'est pas fourni, définissez-le comme étant 1 heure après training_time
+    end_time = training.end_time or (datetime.combine(date.min, training_time) + timedelta(hours=1)).time()
+
     query = trainings_table.insert().values(
         title=training.title,
         description=training.description,
         date=training.date,
         time=training_time,
+        end_time=end_time,
         creator_id=training.creator_id,
+        meeting_link=training.meeting_link,
     )
     training_id = await database.execute(query)
     return training_id
@@ -46,7 +52,9 @@ async def update_training(training_id: int, updated_training: TrainingUpdate):
         title=updated_training.title,
         description=updated_training.description,
         date=updated_training.date,
-        time=updated_training.time
+        time=updated_training.time,
+        end_time=updated_training.end_time,
+        meeting_link=updated_training.meeting_link,
     )
     await database.execute(query)
     return {"detail": f"Training with id {training_id} updated successfully."}

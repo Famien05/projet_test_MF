@@ -5,6 +5,8 @@ import { Button } from "react-bootstrap";
 
 const MyTrainings = () => {
   const [trainings, setTrainings] = useState([]);
+  const [nextTrainingStartTime, setNextTrainingStartTime] = useState(null);
+  const [nextTrainingEndTime, setNextTrainingEndTime] = useState(null);
 
   const fetchTrainings = useCallback(async () => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -20,32 +22,59 @@ const MyTrainings = () => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    // Récupérer les formations au montage du composant
+    const timer = timerRef.current;
     fetchTrainings();
-
-    // Nettoyer le timer lors du démontage du composant
+  
     return () => {
-      clearTimeout(timerRef.current);
+      clearTimeout(timer);
     };
   }, [fetchTrainings]);
 
   useEffect(() => {
     if (trainings.length > 0) {
-      // Trouver l'heure de début de la prochaine formation
-      const nextTrainingStartTime = trainings.reduce((minStartTime, training) => {
-        const combinedStartDateTime = new Date(`${training.date}T${training.time}`);
-        return combinedStartDateTime > new Date() && combinedStartDateTime < minStartTime
-          ? combinedStartDateTime
-          : minStartTime;
-      }, new Date(8640000000000000)); // Maximum possible date
+      const nextTraining = trainings.reduce(
+        (next, training) => {
+          const combinedStartDateTime = new Date(`${training.date}T${training.time}`);
+          const combinedEndDateTime = new Date(`${training.date}T${training.end_time}`);
+          const now = new Date();
 
-      // Calculer le temps restant avant le début de la prochaine formation
-      const timeUntilNextTrainingStart = nextTrainingStartTime - new Date();
+          if (combinedStartDateTime > now && (!next.start || combinedStartDateTime < next.start)) {
+            return { ...training, start: combinedStartDateTime, end: combinedEndDateTime };
+          } else {
+            return next;
+          }
+        },
+        { start: null, end: null }
+      );
 
-      // Démarrer un timer pour mettre à jour les formations une fois que la prochaine formation commence
-      timerRef.current = setTimeout(fetchTrainings, timeUntilNextTrainingStart);
+      setNextTrainingStartTime(nextTraining.start);
+      setNextTrainingEndTime(nextTraining.end);
     }
-  }, [fetchTrainings, trainings]);
+  }, [trainings]);
+  useEffect(() => {
+    let startTimerId;
+    let endTimerId;
+  
+    if (nextTrainingStartTime) {
+      const timeUntilNextTrainingStart =
+        nextTrainingStartTime.getTime() - new Date().getTime();
+      startTimerId = startTimer(timeUntilNextTrainingStart, fetchTrainings);
+    }
+  
+    if (nextTrainingEndTime) {
+      const timeUntilNextTrainingEnd =
+        nextTrainingEndTime.getTime() - new Date().getTime();
+      endTimerId = startTimer(timeUntilNextTrainingEnd, () => {
+        fetchTrainings();
+        setNextTrainingEndTime(null);
+      });
+    }
+  
+    return () => {
+      clearTimer(startTimerId);
+      clearTimer(endTimerId);
+    };
+  }, [nextTrainingStartTime, nextTrainingEndTime, fetchTrainings]);
 
   const shouldDisplayJoinButton = (date, startTime, endTime) => {
     const currentDate = new Date();
@@ -53,6 +82,18 @@ const MyTrainings = () => {
     const endDateTime = new Date(`${date}T${endTime}`);
     return currentDate >= startDateTime && currentDate <= endDateTime;
   };
+
+  const startTimer = (timeUntilStart, callback) => {
+    const timer = setTimeout(() => {
+      callback();
+    }, timeUntilStart);
+    return timer;
+  };
+
+  const clearTimer = (timer) => {
+    clearTimeout(timer);
+  };
+
   return (
     <div>
       <h2>Mes formations</h2>

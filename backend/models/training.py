@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import date, time
+from typing import Optional
 
 import sqlalchemy
 from sqlalchemy import Column, Integer, String, Date, Time, ForeignKey
@@ -13,7 +14,9 @@ trainings_table = sqlalchemy.Table(
     sqlalchemy.Column("description", sqlalchemy.String),
     sqlalchemy.Column("date", sqlalchemy.Date),
     sqlalchemy.Column("time", sqlalchemy.Time),
+    sqlalchemy.Column("end_time", sqlalchemy.Time),
     sqlalchemy.Column("creator_id", sqlalchemy.Integer),
+    sqlalchemy.Column("meeting_link", sqlalchemy.String),
 )
 
 user_trainings_table = sqlalchemy.Table(
@@ -29,13 +32,17 @@ class TrainingCreate(BaseModel):
     description: str
     date: date
     time: time
+    end_time: Optional[time] = None
     creator_id: int
+    meeting_link: str
 
 class TrainingUpdate(BaseModel):
     title: str
     description: str
     date: date
     time: time
+    end_time: Optional[time] = None
+    meeting_link: str
 
     class Config:
         orm_mode = True
@@ -46,7 +53,10 @@ class Training(BaseModel):
     description: str
     date: date
     time: time
+    end_time: Optional[time] = None
     creator_id: int
+    meeting_link: str
+    
 
     class Config:
         orm_mode = True
