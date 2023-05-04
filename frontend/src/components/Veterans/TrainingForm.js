@@ -9,34 +9,62 @@ const TrainingForm = () => {
   const [endTime, setEndTime] = useState('');
   const [meeting_link, setMeeting_link] = useState('');
 
-  const isEndTimeValid = (startTime, endTime) => {
-    const start = new Date(`1970-01-01T${startTime}`);
-    const end = new Date(`1970-01-01T${endTime}`);
-    return end > start;
+
+
+  const isDateTimeValid = (selectedDate, startTime, endTime) => {
+    const currentDate = new Date();
+    const selectedDateObj = new Date(selectedDate);
+    const selectedStartDateTime = new Date(`${selectedDate}T${startTime}`);
+    const selectedEndDateTime = new Date(`${selectedDate}T${endTime}`);
+  
+    // Si la date est supérieure à la date actuelle, n'importe quelle heure de début et de fin est valide
+    // tant que l'heure de fin est supérieure à l'heure de début
+    if (selectedDateObj > currentDate) {
+      return selectedEndDateTime > selectedStartDateTime;
+    }
+  
+    // Si la date est égale à la date actuelle, vérifiez que l'heure de début est supérieure
+    // à l'heure actuelle et que l'heure de fin est supérieure à l'heure de début
+    if (selectedDateObj.toDateString() === currentDate.toDateString()) {
+      return (
+        selectedStartDateTime > currentDate &&
+        selectedEndDateTime > selectedStartDateTime
+      );
+    }
+
+    // Si la date est inférieure à la date actuelle, la validation échoue
+    return false;
   };
+
+
+  
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (title && description && date && time && endTime && meeting_link) {
-      if (isEndTimeValid(time, endTime)) {
-        // Récupérer les informations de l'utilisateur connecté depuis le localStorage
-        const user = JSON.parse(localStorage.getItem('user'));
-        const creator_id = user.id;
-
-        const training = { title, description, date, time, endTime, creator_id, meeting_link };
-        await axios.post('http://localhost:8000/veterans/add', training);
-
-        setTitle('');
-        setDescription('');
-        setDate('');
-        setTime('');
-        setEndTime('');
-        setMeeting_link('');
-      } else {
-        alert("L'heure de fin doit être supérieure à l'heure de début.");
-      }
+  e.preventDefault();
+  if (title && description && date && time && endTime && meeting_link) {
+    if (!isDateTimeValid(date, time, endTime)) {
+      alert(
+        "Vérifiez que la date est supérieure ou égale à la date actuelle et que les heures de début et de fin sont valides."
+      );
+      return;
     }
-  };
+
+    // Récupérer les informations de l'utilisateur connecté depuis le localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+    const creator_id = user.id;
+
+    const training = { title, description, date, time, endTime, creator_id, meeting_link };
+    await axios.post('http://localhost:8000/veterans/add', training);
+
+    setTitle('');
+    setDescription('');
+    setDate('');
+    setTime('');
+    setEndTime('');
+    setMeeting_link('');
+  }
+};
+
 
   return (
     <div className="form-container">

@@ -73,13 +73,42 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
   }, [nextTrainingStartTime, nextTrainingEndTime, fetchTrainings]);
   
 
+
+  const isDateTimeValid = (selectedDate, startTime, endTime) => {
+    const currentDate = new Date();
+    const selectedDateObj = new Date(selectedDate);
+    const selectedStartDateTime = new Date(`${selectedDate}T${startTime}`);
+    const selectedEndDateTime = new Date(`${selectedDate}T${endTime}`);
+  
+    if (selectedDateObj > currentDate) {
+      return selectedEndDateTime > selectedStartDateTime;
+    }
+  
+    if (selectedDateObj.toDateString() === currentDate.toDateString()) {
+      return (
+        selectedStartDateTime > currentDate &&
+        selectedEndDateTime > selectedStartDateTime
+      );
+    }
+  
+    return false;
+  };
+  
+
   const updateTraining = async (trainingId) => {
     if (editingTraining && editingTraining.id === trainingId) {
+      if (!isDateTimeValid(editingTraining.date, editingTraining.time, editingTraining.end_time)) {
+        alert(
+          "Vérifiez que la date est supérieure ou égale à la date actuelle et que les heures de début et de fin sont valides."
+        );
+        return;
+      }
+  
       try {
         await axios.put(`http://localhost:8000/veterans/update/${trainingId}`, editingTraining);
         setTrainings(trainings.map((training) => (training.id === trainingId ? editingTraining : training)));
         setEditingTraining(null);
-
+  
         if (onTrainingUpdate) {
           onTrainingUpdate();
         }
@@ -91,6 +120,7 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
       setEditingTraining(training);
     }
   };
+  
 
   const deleteTraining = async (trainingId) => {
     try {
@@ -125,120 +155,125 @@ const MyOfferedTrainings = ({ onTrainingUpdate }) => {
   };
   return (
     <div>
-      <h2>Formations proposées</h2>
-      <div className="training-grid">
-        {trainings.map((training) => (
-          <div key={training.id} className="training-card">
+    <h2>Formations proposées</h2>
+    <div className="training-grid">
+      {trainings.map((training) => (
+        <div key={training.id} className="training-card">
+          {editingTraining && editingTraining.id === training.id ? (
+            <form onSubmit={(e) => handleInputChange(e, training.id)}>
+              <label>
+                Titre:
+                <input
+                  type="text"
+                  value={editingTraining.title}
+                  onChange={(e) =>
+                    setEditingTraining({
+                      ...editingTraining,
+                      title: e.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label>
+                Description:
+                <input
+                  type="text"
+                  value={editingTraining.description}
+                  onChange={(e) =>
+                    setEditingTraining({
+                      ...editingTraining,
+                      description: e.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label>
+                Date:
+                <input
+                  type="date"
+                  value={editingTraining.date}
+                  onChange={(e) =>
+                    setEditingTraining({
+                      ...editingTraining,
+                      date: e.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label>
+                Heure:
+                <input
+                  type="time"
+                  value={editingTraining.time}
+                  onChange={(e) =>
+                    setEditingTraining({
+                      ...editingTraining,
+                      time: e.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label>
+                Heure de fin:
+                <input
+                  type="time"
+                  value={editingTraining.end_time}
+                  onChange={(e) =>
+                    setEditingTraining({
+                      ...editingTraining,
+                      end_time: e.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label>
+                Lien de la réunion:
+                <input
+                  type="url"
+                  value={editingTraining.meeting_link}
+                  onChange={(e) =>
+                    setEditingTraining({
+                      ...editingTraining,
+                      meeting_link: e.target.value,
+                    })
+                  }
+                />
+              </label>
+            </form>
+          ) : (
+            <>
+              <h3>{training.title}</h3>
+              <p>{training.description}</p>
+              <p>Date: {training.date}</p>
+              <p>Heure: {training.time}</p>
+              <p>Heure de fin: {training.end_time}</p>
+              {shouldDisplayJoinButton(training.date, training.time, training.end_time) && (
+                <Button className="join-btn" href={training.meeting_link} target="_blank">
+                  Rejoindre la réunion
+                </Button>
+              )}
+            </>
+          )}
+          <div className={`button-container ${editingTraining && editingTraining.id === training.id ? "editing" : ""}`}>
             {editingTraining && editingTraining.id === training.id ? (
-              <form onSubmit={(e) => handleInputChange(e, training.id)}>
-                <label>
-                  Titre:
-                  <input
-                    type="text"
-                    value={editingTraining.title}
-                    onChange={(e) =>
-                      setEditingTraining({
-                        ...editingTraining,
-                        title: e.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label>
-                  Description:
-                  <input
-                    type="text"
-                    value={editingTraining.description}
-                    onChange={(e) =>
-                      setEditingTraining({
-                        ...editingTraining,
-                        description: e.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label>
-                  Date:
-                  <input
-                    type="date"
-                    value={editingTraining.date}
-                    onChange={(e) =>
-                      setEditingTraining({
-                        ...editingTraining,
-                        date: e.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label>
-                  Heure:
-                  <input
-                    type="time"
-                    value={editingTraining.time}
-                    onChange={(e) =>
-                      setEditingTraining({
-                        ...editingTraining,
-                        time: e.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label>
-                  Heure de fin:
-                  <input
-                    type="time"
-                    value={editingTraining.end_time}
-                    onChange={(e) =>
-                      setEditingTraining({
-                        ...editingTraining,
-                        end_time: e.target.value,
-                      })
-                    }
-                  />
-                </label>
-                <label>
-                  Lien de la réunion:
-                  <input
-                    type="url"
-                    value={editingTraining.meeting_link}
-                    onChange={(e) =>
-                      setEditingTraining({
-                        ...editingTraining,
-                        meeting_link: e.target.value,
-                      })
-                    }
-                  />
-                </label>
+              <>
+                <button type="button" className="save-btn" onClick={() => updateTraining(training.id)}>Enregistrer</button>
                 <button type="button" className="cancel-btn" onClick={() => setEditingTraining(null)}>
                   Annuler
                 </button>
-              </form>
+              </>
             ) : (
               <>
-                <h3>{training.title}</h3>
-                <p>{training.description}</p>
-                <p>Date: {training.date}</p>
-                <p>Heure: {training.time}</p>
-                <p>Heure de fin: {training.end_time}</p>
-                {shouldDisplayJoinButton(training.date, training.time, training.end_time) && (
-                  <Button className="join-btn" href={training.meeting_link} target="_blank">
-                    Rejoindre la réunion
-                  </Button>
-                )}
+                <button className="edit-btn" onClick={() => updateTraining(training.id)}>Modifier</button>
+                <button className="delete-btn" onClick={() => deleteTraining(training.id)}>Supprimer</button>
               </>
             )}
-            <div className={`button-container ${editingTraining && editingTraining.id === training.id ? "editing" : ""}`}>
-
-            <button className="edit-btn" onClick={() => updateTraining(training.id)}>
-              {editingTraining && editingTraining.id === training.id ? "Sauvegarder" : "Modifier"}
-            </button>
-            <button className="delete-btn" onClick={() => deleteTraining(training.id)}>Supprimer</button>
-            </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
-  );
+  </div>
+);
   
 };
 
