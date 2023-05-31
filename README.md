@@ -63,3 +63,29 @@ rm -f /tmp/node-${NODE_VERSION}-linux-x64.tar.xz
 5. La dernière étape du script supprime l'archive téléchargée pour nettoyer le répertoire temporaire.
 
 N'oubliez pas de remplacer `""` par la version de Node.js que vous souhaitez installer et vos informations d'identification Artifactory. Assurez-vous de ne pas exposer ces informations sensibles, surtout si vous prévoyez de partager ce script.
+
+
+
+
+###################
+
+# Définissez les informations d'identification de l'Artifactory
+# Remplacez "" par vos informations d'identification Artifactory
+ARTIFACTORY_CREDS_USR=""
+ARTIFACTORY_CREDS_PSW=""
+
+# Téléchargez le fichier d'authentification .npmrc depuis l'Artifactory
+curl -kL -u ${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW} https://repo.artifactory-dogen.group.echonet/artifactory/api/npm/auth/ > ~/.npmrc
+
+# Configurez npm pour désactiver strict-ssl
+npm config set strict-ssl false
+
+# Configurez npm pour utiliser le dépôt npm Artifactory
+# Remplacez <DevopsSpaceId> par l'ID de votre espace DevOps
+npm config set registry https://repo.artifactory-dogen.group.echonet/artifactory/api/npm/<DevopsSpaceId>-npm/
+
+# Configurez npm pour télécharger des binaires précompilés pour node-sass depuis le dépôt Artifactory
+npm set sass-binary-site https://${ARTIFACTORY_CREDS_US}:${ARTIFACTORY_CREDS_PSW}@repo.artifactory-dogen.group.echonet/artifactory/node-sass
+
+# Installez les modules npm
+npm install
