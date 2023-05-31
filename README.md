@@ -49,25 +49,7 @@ chmod a+rx /usr/bin /usr/local/lib &&
 
 # Étape 3 : Nettoyage du fichier téléchargé
 echo "Nettoyage du fichier téléchargé" &&
-rm -f /tmp/node-${NODE_VERSION}-linux-x64.tar.xz
-```
 
-1. La version de Node.js à installer est définie par la variable `NODE_VERSION`. 
-
-2. `ARTI_USER` et `ARTI_PASS` sont vos identifiants pour Artifactory. 
-
-3. La première étape du script est de télécharger Node.js depuis un dépôt Artifactory. Le fichier est sauvegardé sous `/tmp/node-${NODE_VERSION}-linux-x64.tar.xz`.
-
-4. Ensuite, le script installe Node.js en créant un répertoire pour les fichiers, en extrayant l'archive téléchargée dans ce répertoire, puis en créant des liens symboliques pour `node` et `npm` dans `/usr/bin`, afin que ces commandes soient accessibles dans tout le système.
-
-5. La dernière étape du script supprime l'archive téléchargée pour nettoyer le répertoire temporaire.
-
-N'oubliez pas de remplacer `""` par la version de Node.js que vous souhaitez installer et vos informations d'identification Artifactory. Assurez-vous de ne pas exposer ces informations sensibles, surtout si vous prévoyez de partager ce script.
-
-
-
-
-###################
 
 # Définissez les informations d'identification de l'Artifactory
 # Remplacez "" par vos informations d'identification Artifactory
