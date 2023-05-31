@@ -25,41 +25,41 @@ def get_new_mdp(BU, BL, ecosystem):
    - Postgres : notre système de gestion de base de données. Une instance Postgres doit être en cours d'exécution pour stocker et récupérer les données de notre application.
    - Python : le langage de programmation utilisé pour développer notre backend FastAPI.
 
-2. **Frontend** :
-   Après avoir installé Node.js, vous devez installer les dépendances spécifiques à notre application frontend. Dans le répertoire du projet frontend, exécutez la commande `npm install` pour installer toutes les dépendances requises listées dans notre fichier `package.json`.
+Bien sûr, je vais ajouter plus de détails en français pour chaque étape de votre script :
 
-3. **Backend** :
-   De même, après avoir installé Python, vous devez installer les dépendances spécifiques à notre application backend. Dans le répertoire du projet backend, exécutez la commande `pip install -r requirements.txt` pour installer toutes les dépendances requises listées dans notre fichier `requirements.txt`.
+```bash
+# Définir la version de Node.js à télécharger
+NODE_VERSION=""
 
-En respectant ces prérequis, vous serez en mesure de travailler efficacement sur notre application, que ce soit pour le développement, le débogage ou le déploiement.
+# Définir les informations d'identification de l'Artifactory
+ARTI_USER=""
+ARTI_PASS=""
 
+# Étape 1 : Télécharger la version spécifiée de Node.js à partir de l'Artifactory
+echo "Téléchargement de Node $NODE_VERSION" &&
+curl -k -u $ARTI_USER:$ARTI_PASS https://artifactory-devops.group.echonet.net.intra/artifactory/common-generic/nodejs/$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -o /tmp/node-${NODE_VERSION}-linux-x64.tar.xz
 
-Bien sûr, voici une suggestion pour expliquer comment démarrer l'application :
+# Étape 2 : Installer la version de Node.js téléchargée
+echo "Installation de Node $NODE_VERSION" &&
+mkdir -p /usr/local/lib/nodejs &&
+tar -xf /tmp/node-${NODE_VERSION}-linux-x64.tar.xz -C /usr/local/lib/nodejs &&
+ln -s /usr/local/lib/nodejs/node-v${NODE_VERSION}-linux-x64/bin/node /usr/bin/node &&
+ln -s /usr/local/lib/nodejs/node-v${NODE_VERSION}-linux-x64/bin/npm /usr/bin/npm &&
+chmod a+rx /usr/bin /usr/local/lib &&
 
-1. **Frontend (React)** :
+# Étape 3 : Nettoyage du fichier téléchargé
+echo "Nettoyage du fichier téléchargé" &&
+rm -f /tmp/node-${NODE_VERSION}-linux-x64.tar.xz
+```
 
-   Dans le répertoire de l'application frontend, exécutez la commande suivante pour démarrer le serveur de développement React :
+1. La version de Node.js à installer est définie par la variable `NODE_VERSION`. 
 
-   ```
-   npm start
-   ```
+2. `ARTI_USER` et `ARTI_PASS` sont vos identifiants pour Artifactory. 
 
-   Cela devrait démarrer le serveur de développement React et ouvrir automatiquement une nouvelle fenêtre de navigateur avec votre application. Par défaut, l'application devrait être accessible à l'adresse `http://localhost:3000`.
+3. La première étape du script est de télécharger Node.js depuis un dépôt Artifactory. Le fichier est sauvegardé sous `/tmp/node-${NODE_VERSION}-linux-x64.tar.xz`.
 
-2. **Backend (FastAPI)** :
+4. Ensuite, le script installe Node.js en créant un répertoire pour les fichiers, en extrayant l'archive téléchargée dans ce répertoire, puis en créant des liens symboliques pour `node` et `npm` dans `/usr/bin`, afin que ces commandes soient accessibles dans tout le système.
 
-   Dans le répertoire de l'application backend, vous pouvez démarrer le serveur FastAPI avec la commande suivante :
+5. La dernière étape du script supprime l'archive téléchargée pour nettoyer le répertoire temporaire.
 
-   ```
-   uvicorn main:app --reload
-   ```
-
-   Remplacez `main:app` par le nom du fichier Python (sans l'extension `.py`) et le nom de l'instance FastAPI. L'option `--reload` permet de redémarrer le serveur automatiquement lorsque des modifications sont apportées au code source.
-
-   Par défaut, le serveur FastAPI devrait être accessible à l'adresse `http://localhost:8000`.
-
-3. **Base de données (Postgres)** :
-
-   Assurez-vous que votre base de données Postgres est en cours d'exécution et que votre application backend est correctement configurée pour s'y connecter.
-
-Une fois que vous avez démarré les deux parties de l'application et la base de données, vous devriez pouvoir interagir avec votre application à travers le navigateur. N'oubliez pas de vérifier que les services communiquent correctement entre eux.
+N'oubliez pas de remplacer `""` par la version de Node.js que vous souhaitez installer et vos informations d'identification Artifactory. Assurez-vous de ne pas exposer ces informations sensibles, surtout si vous prévoyez de partager ce script.
