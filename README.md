@@ -27,47 +27,25 @@ def get_new_mdp(BU, BL, ecosystem):
 
 Bien sûr, je vais ajouter plus de détails en français pour chaque étape de votre script :
 
-```bash
-# Définir la version de Node.js à télécharger
-NODE_VERSION=""
 
-# Définir les informations d'identification de l'Artifactory
-ARTI_USER=""
-ARTI_PASS=""
+- Etudiant en Master 2 en Data Engineering à l'Ecole d'ingénieurs généraliste du numérique (EFREI PARIS)
 
-# Étape 1 : Télécharger la version spécifiée de Node.js à partir de l'Artifactory
-echo "Téléchargement de Node $NODE_VERSION" &&
-curl -k -u $ARTI_USER:$ARTI_PASS https://artifactory-devops.group.echonet.net.intra/artifactory/common-generic/nodejs/$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -o /tmp/node-${NODE_VERSION}-linux-x64.tar.xz
+- Expérience professionnelle en cours :
+  - Stage actuel en Data Engineering
+  - Entreprise : [Nom de l'entreprise]
+  - Durée : [Durée du stage]
+  - Responsabilités : [Principales tâches et réalisations]
 
-# Étape 2 : Installer la version de Node.js téléchargée
-echo "Installation de Node $NODE_VERSION" &&
-mkdir -p /usr/local/lib/nodejs &&
-tar -xf /tmp/node-${NODE_VERSION}-linux-x64.tar.xz -C /usr/local/lib/nodejs &&
-ln -s /usr/local/lib/nodejs/node-v${NODE_VERSION}-linux-x64/bin/node /usr/bin/node &&
-ln -s /usr/local/lib/nodejs/node-v${NODE_VERSION}-linux-x64/bin/npm /usr/bin/npm &&
-chmod a+rx /usr/bin /usr/local/lib &&
+- Expérience professionnelle précédente :
+  - Data Analyst
+    - Entreprise : Région Ile-de-France
+    - Durée : Janvier 2022 - Avril 2022
 
-# Étape 3 : Nettoyage du fichier téléchargé
-echo "Nettoyage du fichier téléchargé" &&
+- Expérience professionnelle antérieure :
+  - Equipier polyvalent
+    - Entreprise : McDonald's, Rungis
+    - Durée : Décembre 2021 - Présent
 
-
-# Définissez les informations d'identification de l'Artifactory
-# Remplacez "" par vos informations d'identification Artifactory
-ARTIFACTORY_CREDS_USR=""
-ARTIFACTORY_CREDS_PSW=""
-
-# Téléchargez le fichier d'authentification .npmrc depuis l'Artifactory
-curl -kL -u ${ARTIFACTORY_CREDS_USR}:${ARTIFACTORY_CREDS_PSW} https://repo.artifactory-dogen.group.echonet/artifactory/api/npm/auth/ > ~/.npmrc
-
-# Configurez npm pour désactiver strict-ssl
-npm config set strict-ssl false
-
-# Configurez npm pour utiliser le dépôt npm Artifactory
-# Remplacez <DevopsSpaceId> par l'ID de votre espace DevOps
-npm config set registry https://repo.artifactory-dogen.group.echonet/artifactory/api/npm/<DevopsSpaceId>-npm/
-
-# Configurez npm pour télécharger des binaires précompilés pour node-sass depuis le dépôt Artifactory
-npm set sass-binary-site https://${ARTIFACTORY_CREDS_US}:${ARTIFACTORY_CREDS_PSW}@repo.artifactory-dogen.group.echonet/artifactory/node-sass
-
-# Installez les modules npm
-npm install
+  - Agent d'accueil et d'informations
+    - Entreprises : SAMSIC (Gare de l'est), CITY ONE (Massy Palaiseau)
+    - Durée : Août 2021 - Septembre 2021
