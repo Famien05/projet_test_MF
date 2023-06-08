@@ -70,3 +70,16 @@ async def get_user(uid: str):
     query = users.insert().values(email=user.email, firstname=firstname, lastname=lastname, uid=user.uid)
     await database.execute(query)
     return {"message": "Données ingérées dans la base de données avec succès."}
+
+
+import requests
+import json
+
+def test_get_user():
+    uid = "f45933"  # Remplacez cela par l'UID que vous voulez tester
+    response = requests.get(f"https://marketplace.staging.echonet/api/account/users?uids[]={uid}")
+    data = response.json()
+
+    print(json.dumps(data, indent=4))  # Pour un affichage joli et formaté
+
+test_get_user()
