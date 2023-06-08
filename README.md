@@ -8,44 +8,65 @@ def get_new_mdp(BU, BL, ecosystem):
     postgresUser = "votre_valeur_postgresUser"
     hvaulturl = "votre_valeur_hvaulturl"
     
-    json_token = f"curl --cert {cert_pfx} --key {cert_key}"
-    url = f"{hvaulturl}/v1/{BU}/{BL}/{ecosystem}/auth/cert/login"
-    cmd = f"{json_token} {url}"
-    
-    print(cmd)
-    new_pw = subprocess.check_output(cmd, shell=True).decode().strip()
-    return new_pw
+    from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+import requests
+from databases import Database
+from sqlalchemy import create_engine, MetaData, Table, Column, String
 
+DATABASE_URL = "postgresql://user:password@localhost:5432/mydatabase"
 
+database = Database(DATABASE_URL)
+metadata = MetaData()
 
-1. **Environnement de développement** :
-   Pour travailler sur notre application, il vous faut un environnement avec les logiciels suivants installés :
-   - Node.js : pour exécuter notre application frontend React et gérer ses dépendances.
-   - Visual Studio Code : notre éditeur de code recommandé, doté de fonctionnalités puissantes pour le développement JavaScript et Python.
-   - Postgres : notre système de gestion de base de données. Une instance Postgres doit être en cours d'exécution pour stocker et récupérer les données de notre application.
-   - Python : le langage de programmation utilisé pour développer notre backend FastAPI.
+users = Table(
+    "users",
+    metadata,
+    Column("email", String(50)),
+    Column("firstname", String(50)),
+    Column("lastname", String(50)),
+    Column("uid", String(50), primary_key=True),
+)
 
-Bien sûr, je vais ajouter plus de détails en français pour chaque étape de votre script :
+engine = create_engine(DATABASE_URL)
+metadata.create_all(engine)
 
+app = FastAPI()
 
-- Etudiant en Master 2 en Data Engineering à l'Ecole d'ingénieurs généraliste du numérique (EFREI PARIS)
+class User(BaseModel):
+    email: str = Field(...)
+    name: str = Field(...)
+    uid: str = Field(...)
 
-- Expérience professionnelle en cours :
-  - Stage actuel en Data Engineering
-  - Entreprise : [Nom de l'entreprise]
-  - Durée : [Durée du stage]
-  - Responsabilités : [Principales tâches et réalisations]
+# Fonction pour séparer le nom et le prénom
+def split_name(fullname):
+    words = fullname.split()
+    firstname, lastname = [], []
 
-- Expérience professionnelle précédente :
-  - Data Analyst
-    - Entreprise : Région Ile-de-France
-    - Durée : Janvier 2022 - Avril 2022
+    for word in words:
+        if word.isupper():
+            lastname.append(word)
+        else:
+            firstname.append(word)
 
-- Expérience professionnelle antérieure :
-  - Equipier polyvalent
-    - Entreprise : McDonald's, Rungis
-    - Durée : Décembre 2021 - Présent
+    return ' '.join(firstname), ' '.join(lastname)
 
-  - Agent d'accueil et d'informations
-    - Entreprises : SAMSIC (Gare de l'est), CITY ONE (Massy Palaiseau)
-    - Durée : Août 2021 - Septembre 2021
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
+@app.get("/user/{uid}")
+async def get_user(uid: str):
+    response = requests.get(f"https://marketplace.staging.echonet/api/account/users?uids[]={uid}")
+    if response.status_code != 200:
+        raise HTTPException(status_code=400, detail="UID not found")
+    data = response.json()[0]
+    user = User(**data)  # Validation des données avec Pydantic
+    firstname, lastname = split_name(user.name)
+    query = users.insert().values(email=user.email, firstname=firstname, lastname=lastname, uid=user.uid)
+    await database.execute(query)
+    return {"message": "Données ingérées dans la base de données avec succès."}
