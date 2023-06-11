@@ -1,85 +1,142 @@
-# projet_test_MF
-import subprocess
-
-def get_new_mdp(BU, BL, ecosystem):
-    cert_pfx = "votre_chemin_vers_cert_pfx"
-    cert_key = "votre_chemin_vers_cert_key"
-    postgresinst = "votre_valeur_postgresinst"
-    postgresUser = "votre_valeur_postgresUser"
-    hvaulturl = "votre_valeur_hvaulturl"
-    
-    from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
-import requests
-from databases import Database
-from sqlalchemy import create_engine, MetaData, Table, Column, String
-
-DATABASE_URL = "postgresql://user:password@localhost:5432/mydatabase"
-
-database = Database(DATABASE_URL)
-metadata = MetaData()
-
-users = Table(
-    "users",
-    metadata,
-    Column("email", String(50)),
-    Column("firstname", String(50)),
-    Column("lastname", String(50)),
-    Column("uid", String(50), primary_key=True),
-)
-
-engine = create_engine(DATABASE_URL)
-metadata.create_all(engine)
+#APi
+"""from typing import List
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:3000",  # Autoriser les requêtes CORS depuis l'application React
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class User(BaseModel):
-    email: str = Field(...)
-    name: str = Field(...)
-    uid: str = Field(...)
-
-# Fonction pour séparer le nom et le prénom
-def split_name(fullname):
-    words = fullname.split()
-    firstname, lastname = [], []
-
-    for word in words:
-        if word.isupper():
-            lastname.append(word)
-        else:
-            firstname.append(word)
-
-    return ' '.join(firstname), ' '.join(lastname)
-
-@app.on_event("startup")
-async def startup():
-    await database.connect()
-
-@app.on_event("shutdown")
-async def shutdown():
-    await database.disconnect()
-
-@app.get("/user/{uid}")
-async def get_user(uid: str):
-    response = requests.get(f"https://marketplace.staging.echonet/api/account/users?uids[]={uid}")
-    if response.status_code != 200:
-        raise HTTPException(status_code=400, detail="UID not found")
-    data = response.json()[0]
-    user = User(**data)  # Validation des données avec Pydantic
-    firstname, lastname = split_name(user.name)
-    query = users.insert().values(email=user.email, firstname=firstname, lastname=lastname, uid=user.uid)
-    await database.execute(query)
-    return {"message": "Données ingérées dans la base de données avec succès."}
+    email: str
+    name: str
+    uid: str
 
 
+users = [
+    {"email":"famienleroi.amoin@bnpparibas.com","name":"FamienLeRoiAMOIN","uid":"f45933"},
+    {"email":"johndoe@example.com","name":"John Doe","uid":"f45934"},
+    {"email":"janedoe@example.com","name":"Jane Doe","uid":"f45935"},
+]  # Liste fictive d'utilisateurs
+
+
+@app.get("/api/account/users/{uid}", response_model=List[User])
+async def get_user_data(uid: str):
+#@app.get("/api/account/users/{uid}", response_model=User)
+#async def get_user_data(uid: str):
+    for user in users:
+        if user["uid"] == uid:
+            #return user
+            return [user for user in users if user["uid"] == uid]
+    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+"""
+
+from typing import List
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel
 import requests
-import json
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import create_engine, Column, String
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.ext.declarative import declarative_base
 
-def test_get_user():
-    uid = "f45933"  # Remplacez cela par l'UID que vous voulez tester
-    response = requests.get(f"https://marketplace.staging.echonet/api/account/users?uids[]={uid}")
+DATABASE_URL = "postgresql://postgres:0000@localhost:5433/projetFormation"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+class User(BaseModel):
+    email: str
+    name: str
+    uid: str
+
+class UserTable(Base):
+    __tablename__ = "Utilisateur"
+
+    email = Column(String, primary_key=True, index=True)
+    name = Column(String)
+    uid = Column(String)
+
+app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/api/account/users/{uid}", response_model=List[User])
+async def get_user_data(uid: str, db: Session = Depends(get_db)):
+    response = requests.get(f'https://marketplace.staging.echonet/api/account/users?uids[]={uid}')
     data = response.json()
 
-    print(json.dumps(data, indent=4))  # Pour un affichage joli et formaté
+    if data:
+        for user_data in data:
+            user = UserTable(**user_data)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
 
-test_get_user()
+        return data
+
+    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+
+
+App.js:
+import React, { useState } from "react";
+
+function App() {
+  const [uid, setUid] = useState("");
+  const [userData, setUserData] = useState(null);
+
+  const getUserData = async () => {
+    const response = await fetch(`http://localhost:8000/api/account/users/${uid}`);
+    const data = await response.json();
+    setUserData(data);
+  };
+
+  return (
+    <div className="App">
+      <input
+        type="text"
+        value={uid}
+        onChange={e => setUid(e.target.value)}
+        placeholder="Entrez l'UID ici"
+      />
+      <button onClick={getUserData}>Obtenir les informations de l'utilisateur</button>
+      {userData && (
+        <div>
+          <p>{JSON.stringify(userData)}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default App;
