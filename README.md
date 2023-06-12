@@ -160,3 +160,67 @@ class User(Base):
 
 # Assurez-vous que les tables sont créées
 Base.metadata.create_all(bind=engine)
+
+
+
+
+
+
+from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy.orm import Session
+from typing import List
+
+from db_manager import User, SessionLocal, engine  # Remplacez databases par db_manager
+
+User.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+# Obtenez une session de base de données
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+users = [
+    {"email":"johndoe@example.com","name":"John Doe","uid":"f45934"},
+    {"email":"janedoe@example.com","name":"Jane Doe","uid":"f45935"},
+]  # Liste fictive d'utilisateurs 
+
+def split_name(full_name: str) -> tuple:
+    first_name, last_name = full_name.split(" ")
+    return first_name, last_name
+
+@app.get("/api/account/users/{uid}", response_model=User)
+async def get_user_data(uid: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.uid == uid).first()
+    if user is None:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    else:
+        user_info = {
+            "uid": user.uid,
+            "nom": user.nom,
+            "prenom": user.prenom,
+            "email": user.email
+        }
+        return user_info
+
+@app.post("/api/account/users/{uid}")
+async def create_user(uid: str, db: Session = Depends(get_db)):
+    user_data = next((user for user in users if user["uid"] == uid), None)
+    if user_data is None:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    else:
+        first_name, last_name = split_name(user_data["name"])
+        user_info = User(
+            email = user_data["email"],
+            nom = last_name,
+            prenom = first_name,
+            uid = user_data["uid"]
+        )
+        db.add(user_info)
+        db.commit()
+        db.refresh(user_info)
+        return user_info
