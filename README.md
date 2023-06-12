@@ -86,3 +86,77 @@ CREATE TABLE users (
     uid VARCHAR(255)
 );
 
+
+-----------------
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+from typing import List
+from pydantic import BaseModel
+from databases import SessionLocal, engine, User
+
+class UserResponse(BaseModel):
+    email: str
+    nom: str
+    prenom: str
+    uid: str
+
+app = FastAPI()
+
+# middleware
+origins = ["http://localhost:3000", "http://localhost"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/api/account/users/{uid}", response_model=List[UserResponse])
+def get_user_data(uid: str, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.uid == uid).first()
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    user = UserResponse(email=db_user.email, nom=db_user.nom, prenom=db_user.prenom, uid=db_user.uid)
+    return [user]
+
+@app.post("/api/account/users/", response_model=UserResponse)
+def create_user(user: UserResponse, db: Session = Depends(get_db)):
+    db_user = User(email=user.email, nom=user.nom, prenom=user.prenom, uid=user.uid)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+from sqlalchemy import create_engine, Column, String
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.ext.declarative import declarative_base
+
+DATABASE_URL = "postgresql://user:password@localhost:5432/mydatabase"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+class User(Base):
+    __tablename__ = "users"
+
+    email = Column(String)
+    nom = Column(String)
+    prenom = Column(String)
+    uid = Column(String, primary_key=True)
+
+# Assurez-vous que les tables sont créées
+Base.metadata.create_all(bind=engine)
