@@ -224,3 +224,49 @@ async def create_user(uid: str, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user_info)
         return user_info
+        
+        
+       
+ from fastapi import FastAPI, HTTPException, Depends
+from sqlalchemy.orm import Session
+from typing import List
+
+from db_manager import User, SessionLocal, engine  # Remplacez databases par db_manager
+
+User.Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+# Obtenez une session de base de données
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+# Liste d'utilisateurs fictifs
+users = [
+    {"email":"famienleroi.amoin@bnpparibas.com", "name":"FamienLeRoiAMOIN", "uid":"f45933"},
+    {"email":"johndoe@example.com", "name":"John Doe", "uid":"f45934"},
+    {"email":"janedoe@example.com", "name":"Jane Doe", "uid":"f45935"},
+]
+
+@app.get("/api/account/users/{uid}", response_model=User)
+async def get_user_data(uid: str, db: Session = Depends(get_db)):
+    # Chercher l'utilisateur dans la liste fictive d'abord
+    user = next((u for u in users if u["uid"] == uid), None)
+    
+    # Si l'utilisateur n'est pas trouvé dans la liste fictive, chercher dans la base de données
+    if user is None:
+        user = db.query(User).filter(User.uid == uid).first()
+        if user is None:
+            raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    return user
+
+@app.post("/api/account/users/")
+async def create_user(user: User, db: Session = Depends(get_db)):
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
