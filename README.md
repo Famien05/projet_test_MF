@@ -270,3 +270,84 @@ async def create_user(user: User, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(user)
     return user
+
+
+D'accord, pour cela vous aurez besoin d'un ORM (Object-Relational Mapping) pour interagir avec votre base de données. `SQLAlchemy` est une bibliothèque populaire pour cela en Python. Vous aurez également besoin de `databases` pour le support asynchrone.
+
+Voici comment vous pouvez configurer votre base de données PostgreSQL dans `database.py`:
+
+```python
+from sqlalchemy import create_engine, MetaData, Table, Column, String
+from databases import Database
+
+DATABASE_URL = "postgresql://user:password@localhost:5432/mydatabase"  # A remplacer avec vos informations
+
+engine = create_engine(DATABASE_URL)
+metadata = MetaData()
+
+users_table = Table(
+    "users",
+    metadata,
+    Column("uid", String, primary_key=True),
+    Column("nom", String),
+    Column("prénom", String),
+    Column("email", String),
+    Column("password", String)
+)
+
+database = Database(DATABASE_URL)
+```
+
+Puis, pour utiliser ce fichier dans `main.py`, vous pouvez simplement l'importer et utiliser `database` pour exécuter les requêtes SQL. Vous aurez besoin de quelques modifications pour rendre certains endroits asynchrones :
+
+```python
+from fastapi import FastAPI, HTTPException, Depends
+from pydantic import BaseModel
+from typing import List
+from database import users_table, database
+
+app = FastAPI()
+
+class User(BaseModel):
+    email: str
+    name: str
+    uid: str
+
+class UserUid(BaseModel):
+    uid: str
+
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
+@app.get("/api/account/users/{uid}", response_model=List[User])
+async def get_user_data(uid: str):
+    query = users_table.select().where(users_table.c.uid == uid)
+    users = await database.fetch_all(query)
+    if not users:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    return users
+
+@app.post("/api/account/store-user")
+async def store_user(user_uid: UserUid):
+    query = users_table.select().where(users_table.c.uid == user_uid.uid)
+    user = await database.fetch_one(query)
+    if user is None:
+        raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    print(user)
+    return {"status": "User data received"}
+```
+
+Veuillez noter que ce code assume que vous avez une table `users` dans votre base de données PostgreSQL avec les colonnes `uid`, `nom`, `prénom`, `email` et `password`.
+
+De plus, vous devrez installer `SQLAlchemy` et `databases` avec `asyncpg` (un pilote PostgreSQL asynchrone) en utilisant pip :
+
+```bash
+pip install sqlalchemy databases[postgresql]
+```
+
+Veuillez également noter que vous devrez ajuster la chaîne de connexion `DATABASE_URL` à votre base de données PostgreSQL.
