@@ -1,121 +1,4 @@
-from typing import List
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
-from pydantic import BaseModel
-
-# Votre code de base de données ici
-
-class UserIn(BaseModel):
-    email: str
-    name: str
-    uid: str
-
-@app.post("/api/account/store-user")
-async def store_user(user_uid: UserIn, db: Session = Depends(get_db)):
-    for user in users:
-        if user["uid"] == user_uid.uid:
-            first_name, last_name = split_name(user["name"])
-            user_info = {
-                "uid": user["uid"],
-                "nom": last_name,
-                "prenom": first_name,
-                "email": user["email"],
-                "password": user["uid"],
-            }
-            user = UserTable(**user_info)
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-            return {"status": "User data received"}
-    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
-
-def split_name(full_name: str):
-    return full_name.split(' ', 1)  # On suppose que les noms sont séparés par un espace
-D'accord, voici l'ensemble des codes dans les fichiers respectifs :
-
-**Fichier databases.py :**
-```python
-from sqlalchemy import create_engine, Column, String
-from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy.ext.declarative import declarative_base
-
-DATABASE_URL = "postgresql://user:password@localhost:5432/mydatabase"
-
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-Base = declarative_base()
-
-class User(Base):
-    __tablename__ = "users"
-
-    email = Column(String)
-    nom = Column(String)
-    prenom = Column(String)
-    uid = Column(String, primary_key=True)
-
-# Assurez-vous que les tables sont créées
-Base.metadata.create_all(bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-```
-**Fichier main.py :**
-```python
-from fastapi import FastAPI, Depends, HTTPException
-from pydantic import BaseModel
-from typing import List
-from databases import get_db, User
-
-app = FastAPI()
-
-class UserUid(BaseModel):
-    uid: str
-
-users = [
-    {"email":"johndoe@example.com","name":"John Doe","uid":"f45934"},
-    {"email":"janedoe@example.com","name":"Jane Doe","uid":"f45935"},
-]  # Liste fictive d'utilisateurs
-
-def split_name(full_name: str) -> tuple:
-    first_name, last_name = full_name.split(" ")  # Modifier selon la logique de votre fonction
-    return first_name, last_name
-
-@app.get("/api/account/users/{uid}", response_model=List[User])
-async def get_user_data(uid: str):
-    for user in users:
-        if user["uid"] == uid:
-            return [user for user in users if user["uid"] == uid]
-    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
-
-@app.post("/api/account/store-user")
-async def store_user(user_uid: UserUid, db: Session = Depends(get_db)):
-    for user in users:
-        if user["uid"] == user_uid.uid:
-            first_name, last_name = split_name(user["name"])
-            user_info = User(
-                email = user["email"],
-                nom = last_name,
-                prenom = first_name,
-                uid = user["uid"]
-            )
-            db.add(user_info)
-            db.commit()
-            print(user_info)  # Affiche l'information de l'utilisateur dans la console
-            return {"status": "User data received"}
-    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
-```
-
-Assurez-vous de remplacer "user", "password", "localhost", "5432" et "mydatabase" par vos propres informations d'identification et les détails de la base de données dans le fichier `databases.py`. De plus, votre fonction `split_name` peut nécessiter des ajustements en fonction de la façon dont les noms sont formatés dans vos données.
-
-CREATE TABLE users (
-    email VARCHAR(255) PRIMARY KEY,
-    nom VARCHAR(255),
-    prenom VARCHAR(255),
+al = sessionmaker(autocommit=False, a    prenom VARCHAR(255),
     uid VARCHAR(255)
 );
 
@@ -383,4 +266,77 @@ De plus, vous devrez installer `SQLAlchemy` et `databases` avec `asyncpg` (un pi
 pip install sqlalchemy databases[postgresql]
 ```
 
-Veuillez également noter que vous devrez ajuster la chaîne de connexion `DATABASE_URL` à votre base de données PostgreSQL.
+D'accord, voici comment votre code pourrait être réorganisé pour afficher les logs et pour éviter l'erreur d'entité non traitable. 
+
+Je vais utiliser la bibliothèque `logging` de Python pour ajouter des logs à votre application FastAPI.
+
+`main.py`:
+
+```python
+from typing import List
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from .database import SessionLocal, User, get_db
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+app = FastAPI()
+
+@app.get("/api/account/users/{uid}", response_model=List[User])
+async def get_user_data(uid: str, db: Session = Depends(get_db)):
+    logger.info(f'Retrieving user with UID: {uid}')
+    user = db.query(User).filter(User.uid == uid).first()
+    if user:
+        return user
+    logger.warning(f'User with UID {uid} not found')
+    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+@app.post("/api/account/store-user")
+async def store_user(user: User, db: Session = Depends(get_db)):
+    logger.info(f'Storing user with UID: {user.uid}')
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"status": "User data received"}
+```
+
+`database.py`:
+
+```python
+from sqlalchemy import create_engine, Column, String
+from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.ext.declarative import declarative_base
+from pydantic import BaseModel
+
+SQLALCHEMY_DATABASE_URL = "postgresql://user:password@localhost/db"
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+class UserTable(Base):
+    __tablename__ = "users"
+
+    uid = Column(String, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String)
+
+class User(BaseModel):
+    uid: str
+    name: str
+    email: str
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+```
+
+Notez que le mot de passe, l'utilisateur et l'URL de la base de données dans l'URL `SQLALCHEMY_DATABASE_URL` sont des valeurs fictives. Vous devez les remplacer par vos propres valeurs.
+
+J'espère que cela vous aidera à résoudre vos problèmes! Si vous rencontrez encore des problèmes, n'hésitez pas à demander.
