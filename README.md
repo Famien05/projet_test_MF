@@ -1,3 +1,36 @@
+from typing import List
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from pydantic import BaseModel
+
+# Votre code de base de données ici
+
+class UserIn(BaseModel):
+    email: str
+    name: str
+    uid: str
+
+@app.post("/api/account/store-user")
+async def store_user(user_uid: UserIn, db: Session = Depends(get_db)):
+    for user in users:
+        if user["uid"] == user_uid.uid:
+            first_name, last_name = split_name(user["name"])
+            user_info = {
+                "uid": user["uid"],
+                "nom": last_name,
+                "prenom": first_name,
+                "email": user["email"],
+                "password": user["uid"],
+            }
+            user = UserTable(**user_info)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return {"status": "User data received"}
+    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+def split_name(full_name: str):
+    return full_name.split(' ', 1)  # On suppose que les noms sont séparés par un espace
 D'accord, voici l'ensemble des codes dans les fichiers respectifs :
 
 **Fichier databases.py :**
