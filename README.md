@@ -227,3 +227,25 @@ async def create_user(user: User):
 
     finally:
         db.close()
+
+
+
+from fastapi import HTTPException
+from pydantic import BaseModel, EmailStr
+from sqlalchemy.sql import insert
+
+class User(BaseModel):
+    uid: int
+    name: str
+    email: EmailStr
+
+@app.post("/users/")
+async def create_user(user: User):
+    query = insert(users).values(uid=user.uid, name=user.name, email=user.email)
+
+    try:
+        last_record_id = await database.execute(query)
+        return {"message": "User created successfully", "uid": last_record_id}
+
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
