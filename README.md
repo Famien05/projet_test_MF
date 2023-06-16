@@ -168,3 +168,62 @@ function App() {
 }
 
 export default App;
+
+
+
+
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, EmailStr
+from sqlalchemy import Boolean, Column, Integer, String, create_engine
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+# Configuration de la base de données
+SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+class UserDB(Base):
+    __tablename__ = "users"
+
+    uid = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(String, unique=True)
+
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
+
+class User(BaseModel):
+    uid: int
+    name: str
+    email: EmailStr
+
+@app.post("/users/")
+async def create_user(user: User):
+    db = SessionLocal()
+
+    # Vérifier si l'utilisateur existe déjà
+    if db.query(UserDB).filter(UserDB.uid == user.uid).first():
+        raise HTTPException(status_code=400, detail="User already exists")
+        
+    db_user = UserDB(uid=user.uid, name=user.name, email=user.email)
+
+    try:
+        db.add(db_user)
+        db.commit()
+        return {"message": "User created successfully"}
+
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+    finally:
+        db.close()
