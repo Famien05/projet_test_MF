@@ -67,3 +67,8 @@ def create_user(user: UserIn, db: Session = Depends(get_db)):
 Ce code crée un nouvel utilisateur si le `email` n'est pas déjà pris. Il renvoie une erreur 400 si l'email est déjà enregistré. Vous pouvez tester cette API à l'aide de Postman en envoyant une requête POST à `http://localhost:8000/users/` avec le corps de la requête contenant le JSON utilisateur.
 
 Notez que vous devrez adapter l'URL de la base de données (`SQLALCHEMY_DATABASE_URL`), le nom d'utilisateur et le mot de passe à vos propres paramètres.
+{
+    "uid": "f05934",
+    "name": "John Doe",
+    "email": "johndoe@example.com"
+}
