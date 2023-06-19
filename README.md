@@ -53,15 +53,28 @@ def get_db():
         db.close()
 
 @app.post("/users/")
-def create_user(user: UserIn, db: Session = Depends(get_db)):
-    db_user = db.query(database.User).filter(database.User.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    db_user = database.User(uid=user.uid, email=user.email, name=user.name)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+async def create_user(user: Optional[UserIn] = None, db: Session = Depends(get_db)):
+    try:
+        if user is None:
+            raise HTTPException(status_code=400, detail="User data not provided")
+
+        db_user = db.query(database.User).filter(database.User.email == user.email).first()
+        if db_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        db_user = database.User(uid=user.uid, email=user.email, name=user.name)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except HTTPException as http_exc:
+        raise http_exc
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="User with this UID already exists")
+    except OperationalError:
+        raise HTTPException(status_code=500, detail="Could not connect to the database")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 ```
 
 Ce code crée un nouvel utilisateur si le `email` n'est pas déjà pris. Il renvoie une erreur 400 si l'email est déjà enregistré. Vous pouvez tester cette API à l'aide de Postman en envoyant une requête POST à `http://localhost:8000/users/` avec le corps de la requête contenant le JSON utilisateur.
