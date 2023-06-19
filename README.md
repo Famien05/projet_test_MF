@@ -85,3 +85,33 @@ Notez que vous devrez adapter l'URL de la base de données (`SQLALCHEMY_DATABASE
     "name": "John Doe",
     "email": "johndoe@example.com"
 }
+
+
+
+@app.post("/users/")
+async def create_user(user: Optional[UserIn] = None):
+    db = database.SessionLocal()  # Ici, nous supposons que vous pouvez créer une session locale à partir du module de base de données
+
+    try:
+        if user is None:
+            raise HTTPException(status_code=400, detail="User data not provided")
+
+        db_user = db.query(database.User).filter(database.User.email == user.email).first()
+        if db_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        db_user = database.User(uid=user.uid, email=user.email, name=user.name)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except HTTPException as http_exc:
+        raise http_exc
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="User with this UID already exists")
+    except OperationalError:
+        raise HTTPException(status_code=500, detail="Could not connect to the database")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        db.close()
