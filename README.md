@@ -1,3 +1,11 @@
+from urllib.parse import quote
+
+password = quote("38#iZ]8DsUm3+P5")
+SQLALCHEMY_DATABASE_URL = f"oracle+cx_oracle://APL_11115_US01:{password}@localhost:1521/?service_name=X002172P10"
+
+
+
+
 D'accord, voici comment vous pourriez structurer votre application FastAPI avec SQLAlchemy pour la gestion de base de données Postgres.
 
 D'abord, votre fichier `database.py` pourrait ressembler à ceci:
