@@ -1,6 +1,15 @@
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+X002172P10=
+  (DESCRIPTION =
+    (ADDRESS_LIST =
+      (ADDRESS = (PROTOCOL = TCP)(HOST = S01VL9985751)(PORT = 1521))
+      (ADDRESS = (PROTOCOL = TCP)(HOST = S01VL9985752)(PORT = 1521))
+    )
+    (CONNECT_DATA =
+      (SERVICE_NAME = X_11115_SAAM_0001)
+    )
+  )
+  
 
 # Create a new engine with your connection details
 engine = create_engine("oracle+cx_oracle://APL_11115_USO1:a8#iZ]8DsUm3*P5@X002172P10")
