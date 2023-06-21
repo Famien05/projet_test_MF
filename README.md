@@ -1,6 +1,7 @@
 oracle+cx_oracle://user:password@host:port/?service_name=service
 
 
+DATABASE_URL = "oracle+cx_oracle://grp_data_ap11115_it_write_p:password_here@SO1VL9985751:1521/X_11115_SAAM_106TI"
 
 
 
