@@ -1,3 +1,17 @@
+
+app.get('/test', async (req, res) => {
+    try {
+        let result = await db.query(`SELECT * FROM votre_table`);
+        res.send(result);
+    } catch (err) {
+        console.error(err);
+        res.send('Erreur lors de la récupération des données');
+    }
+});
+
+
+
+
 from urllib.parse import quote
 
 password = quote("38#iZ]8DsUm3+P5")
