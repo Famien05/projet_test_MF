@@ -1,4 +1,15 @@
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+# Create a new engine with your connection details
+engine = create_engine("oracle+cx_oracle://APL_11115_USO1:a8#iZ]8DsUm3*P5@X002172P10")
+
+# Create a new sessionmaker bound to this engine
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+
 Les informations de connexion à une base de données Oracle généralement nécessaires sont :
 
 1. **Nom d'utilisateur** : Le compte avec lequel vous vous connectez à la base de données.
