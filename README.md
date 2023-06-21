@@ -1,3 +1,27 @@
+
+Les informations de connexion à une base de données Oracle généralement nécessaires sont :
+
+1. **Nom d'utilisateur** : Le compte avec lequel vous vous connectez à la base de données.
+
+2. **Mot de passe** : Le mot de passe associé à ce compte.
+
+3. **Hostname** : Le nom de l'hôte ou l'adresse IP du serveur où réside la base de données.
+
+4. **Port** : Le port d'écoute du serveur de base de données.
+
+5. **Nom de service/SID** : Identifiant unique de la base de données sur le serveur.
+
+Toutes ces informations sont généralement fournies par votre administrateur de base de données. Certaines peuvent être trouvées à l'aide de requêtes SQL, mais d'autres, comme le mot de passe, ne sont pas accessibles pour des raisons de sécurité.
+
+Si vous avez déjà une session active, vous pouvez utiliser les commandes SQL suivantes pour obtenir certaines de ces informations :
+
+- Nom de l'utilisateur : `SELECT user FROM dual;`
+- Nom de service : `SELECT value FROM v$parameter WHERE name = 'service_names';`
+- SID : `SELECT sid FROM v$mystat WHERE rownum <= 1;`
+- Hostname : Cette information n'est généralement pas disponible directement à partir de SQL en raison de problèmes de sécurité.
+
+Notez que vous devez avoir les autorisations appropriées pour exécuter ces requêtes.
+
 oracle+cx_oracle://user:password@host:port/?service_name=service
 
 
