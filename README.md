@@ -1,12 +1,5 @@
-@app.get("/users/")
-async def read_users(db: Session = Depends(get_db)):
-    try:
-        users = db.query(database.User).all()
-        return users
-    except cx_Oracle.OperationalError:
-        raise HTTPException(status_code=500, detail="Could not connect to the database")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+oracle+cx_oracle://user:password@host:port/?service_name=service
+
 
 
 
