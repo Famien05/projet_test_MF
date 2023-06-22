@@ -1,3 +1,102 @@
+voici mon code avec le user 
+#1er
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import Optional
+from pydantic import BaseModel
+import database
+
+class UserIn(BaseModel):
+    uid: str
+    name: str
+    email: str
+
+class UserWrapper(BaseModel):
+    user: UserIn
+
+app = FastAPI()
+
+# Dependency
+def get_db():
+    db = database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.post("/users/")
+async def create_user(user: Optional[UserWrapper] = None, db: Session = Depends(get_db)):
+    try:
+        if user is None or user.user is None:
+            raise HTTPException(status_code=400, detail="User data not provided")
+
+        db_user = db.query(database.User).filter(database.User.email == user.user.email).first()
+        if db_user:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        db_user = database.User(uid=user.user.uid, email=user.user.email, name=user.user.name)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+    except HTTPException as http_exc:
+        raise http_exc
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="User with this UID already exists")
+    except OperationalError:
+        raise HTTPException(status_code=500, detail="Could not connect to the database")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+#2e
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+from typing import Optional, List
+from pydantic import BaseModel
+import database
+
+class UserIn(BaseModel):
+    uid: str
+    name: str
+    email: str
+
+class UserWrapper(BaseModel):
+    user: List[UserIn]
+
+app = FastAPI()
+
+# Dependency
+def get_db():
+    db = database.SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.post("/users/")
+async def create_user(user: Optional[UserWrapper] = None, db: Session = Depends(get_db)):
+    try:
+        if user is None or user.user is None:
+            raise HTTPException(status_code=400, detail="User data not provided")
+
+        for usr in user.user:
+            db_user = db.query(database.User).filter(database.User.email == usr.email).first()
+            if db_user:
+                raise HTTPException(status_code=400, detail=f"Email {usr.email} already registered")
+        
+            db_user = database.User(uid=usr.uid, email=usr.email, name=usr.name)
+            db.add(db_user)
+            db.commit()
+            db.refresh(db_user)
+        return {"detail": "Users created"}
+    except HTTPException as http_exc:
+        raise http_exc
+    except IntegrityError:
+        raise HTTPException(status_code=400, detail="User with this UID already exists")
+    except OperationalError:
+        raise HTTPException(status_code=500, detail="Could not connect to the database")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 X002172P10=
   (DESCRIPTION =
