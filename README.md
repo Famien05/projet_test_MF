@@ -1,3 +1,7 @@
+D'accord, nous pourrions alors formuler l'introduction de cette manière :
+
+"Dans ce sommaire, nous allons aborder tout d'abord notre expérience du hackathon qui comprend l'architecture de l'application, son développement, l'hébergement et les aspects de sécurité que nous avons dû considérer. Ensuite, nous vous présenterons notre travail sur le développement d'une API pour l'équipe Cognos. Enfin, nous terminerons par une démonstration de notre application et de l'API. Préparez-vous à découvrir notre parcours et les apprentissages que nous avons tirés de cette expérience !"
+
 voici mon code avec le user 
 #1er
 from fastapi import FastAPI, Depends, HTTPException
