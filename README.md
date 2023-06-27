@@ -1,3 +1,23 @@
+
+const exec = require('child_process').exec;
+const http = require('http');
+
+http.createServer((req, res) => {
+    exec("curl http://exemple.com", (error, stdout, stderr) => {
+        let bgColor = 'green';
+        let textColor = 'white';
+        if (stdout.includes("erreur")) { // Remplacez "erreur" par la condition qui vous intéresse
+            bgColor = 'red';
+            textColor = 'black';
+        }
+
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(`<body style="background-color: ${bgColor}; color: ${textColor};">${stdout}</body>`);
+        res.end();
+    });
+}).listen(8080, () => console.log('Server running on port 8080'));
+
+
 Pour ce faire, vous pouvez créer un script qui exécute une commande `curl`, examine le résultat, et génère du code HTML avec la couleur appropriée. Voici un exemple simple en utilisant Node.js, qui est une plateforme populaire pour exécuter du JavaScript côté serveur.
 
 ```javascript
