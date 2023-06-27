@@ -1,3 +1,37 @@
+Pour ce faire, vous pouvez créer un script qui exécute une commande `curl`, examine le résultat, et génère du code HTML avec la couleur appropriée. Voici un exemple simple en utilisant Node.js, qui est une plateforme populaire pour exécuter du JavaScript côté serveur.
+
+```javascript
+const exec = require('child_process').exec;
+const http = require('http');
+
+http.createServer((req, res) => {
+    exec("curl http://exemple.com", (error, stdout, stderr) => {
+        let color = 'green';
+        if (stdout.includes("erreur")) { // Remplacez "erreur" par la condition qui vous intéresse
+            color = 'red';
+        }
+
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(`<p style="color: ${color};">${stdout}</p>`);
+        res.end();
+    });
+}).listen(8080);
+```
+
+Ce script lance un serveur HTTP sur le port 8080, exécute une commande `curl` à chaque requête, et renvoie une page HTML avec le résultat de la commande `curl`. La couleur du texte est verte par défaut, mais devient rouge si le résultat contient le mot "erreur".
+
+N'oubliez pas de remplacer "http://exemple.com" par l'URL qui vous intéresse, et "erreur" par la condition qui doit déclencher le changement de couleur.
+
+Pour exécuter ce script, sauvegardez-le dans un fichier `.js`, puis exécutez-le avec Node.js. Si votre serveur est en ligne, vous devriez pouvoir voir les résultats en accédant à `http://votre.adresse.ip:8080` dans un navigateur web.
+
+Bien sûr, cette approche est assez simple et pourrait nécessiter d'être adaptée en fonction de vos besoins spécifiques.
+
+
+
+
+
+
+
 D'accord, nous pourrions alors formuler l'introduction de cette manière :
 
 "Dans ce sommaire, nous allons aborder tout d'abord notre expérience du hackathon qui comprend l'architecture de l'application, son développement, l'hébergement et les aspects de sécurité que nous avons dû considérer. Ensuite, nous vous présenterons notre travail sur le développement d'une API pour l'équipe Cognos. Enfin, nous terminerons par une démonstration de notre application et de l'API. Préparez-vous à découvrir notre parcours et les apprentissages que nous avons tirés de cette expérience !"
