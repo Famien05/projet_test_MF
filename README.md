@@ -1,3 +1,48 @@
+const exec = require('child_process').exec;
+const http = require('http');
+
+http.createServer((req, res) => {
+    exec("curl http://exemple.com", (error, stdout, stderr) => {
+        let bgColor = 'green';
+        let textColor = 'white';
+        let fontSize = '20px'; // Vous pouvez ajuster cette valeur en fonction de vos besoins
+        if (stdout.includes("erreur")) { // Remplacez "erreur" par la condition qui vous intéresse
+            bgColor = 'red';
+            textColor = 'black';
+        }
+
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(`<body style="background-color: ${bgColor}; color: ${textColor}; font-size: ${fontSize};">${stdout}</body>`);
+        res.end();
+    });
+}).listen(8080, () => console.log('Server running on port 8080'));
+
+
+
+const exec = require('child_process').exec;
+const http = require('http');
+
+http.createServer((req, res) => {
+    exec("curl http://exemple.com", (error, stdout, stderr) => {
+        let bgColor = 'green';
+        let textColor = 'white';
+        let fontSize = '20px'; // Vous pouvez ajuster cette valeur en fonction de vos besoins
+        if (stdout.includes("erreur")) { // Remplacez "erreur" par la condition qui vous intéresse
+            bgColor = 'red';
+            textColor = 'black';
+        }
+
+        res.writeHead(200, {'Content-Type': 'text/html'});
+        res.write(`<body style="background-color: ${bgColor}; color: ${textColor}; font-size: ${fontSize}; word-wrap: break-word;">${stdout}</body>`);
+        res.end();
+    });
+}).listen(8080, () => console.log('Server running on port 8080'));
+
+
+
+
+
+
 
 const exec = require('child_process').exec;
 const http = require('http');
