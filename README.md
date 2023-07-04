@@ -1,3 +1,5 @@
+cat ~/.bash_history | grep "ls"
+
 const exec = require('child_process').exec;
 const http = require('http');
 
