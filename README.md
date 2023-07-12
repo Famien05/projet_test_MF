@@ -1,3 +1,63 @@
+import React, { useState } from "react";
+import axios from 'axios';
+
+function UserForm() {
+    const [uid, setUid] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [error, setError] = useState(null); // state pour gérer l'erreur
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        const userData = { uid, firstName, lastName, email };
+
+        axios.post('http://localhost:8000/users/', userData)
+            .then(response => {
+                if (response.status === 200) {
+                    // tout s'est bien passé
+                    setError(null); // effacer toute erreur existante
+                    console.log(response.data);
+                    // redirigez l'utilisateur ou affichez un message de succès
+                } else {
+                    // quelque chose a mal tourné
+                    setError(`Erreur: ${response.status} ${response.statusText}`);
+                }
+            })
+            .catch(error => {
+                // une erreur de réseau ou une erreur côté serveur s'est produite
+                setError(`Erreur: ${error.message}`);
+            });
+    };
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <label>
+                UID:
+                <input type="text" value={uid} onChange={e => setUid(e.target.value)} />
+            </label>
+            <label>
+                Prénom:
+                <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} />
+            </label>
+            <label>
+                Nom:
+                <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} />
+            </label>
+            <label>
+                E-mail:
+                <input type="text" value={email} onChange={e => setEmail(e.target.value)} />
+            </label>
+            <input type="submit" value="Envoyer" />
+            {error && <p>{error}</p>} {/* Afficher le message d'erreur si une erreur s'est produite */}
+        </form>
+    );
+}
+
+export default UserForm;
+
+
+
 cat ~/.bash_history | grep "ls"
 
 const exec = require('child_process').exec;
