@@ -1,3 +1,17 @@
+server {
+    listen 80;
+
+    location / {
+        proxy_pass http://192.168.0.2:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+
+
 from fastapi import APIRouter, HTTPException, Query
 from models.training import TrainingCreate, Training
 from database import database
